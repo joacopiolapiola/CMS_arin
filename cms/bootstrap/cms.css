@@ -1,0 +1,86 @@
+    .i_menu {
+      height:40px;
+      background-color: rgb(175, 211, 252);
+      color :rgb(240, 243, 245);
+      border: 0px solid green;
+      padding: 8px;
+      margin: 2px;
+      opacity: 1.0;
+      border-radius: 3px;
+      text-align: center;
+      font-family: "Arial,Verdana,Lucida Console";
+    }
+    .i_smenu{
+      background-color: rgb(175, 211, 252);
+      border: 1px solid green;
+      padding: 5px;
+      margin: 2px;
+      opacity: 1.0;
+      border-radius: 12px;
+      font-family: "Arial,Verdana,Lucida Console";
+    }
+    .smenu{visibility:visible;}
+
+    #hdr_cat{background-color: rgb(244, 244, 248);
+      color:rgb(245, 243, 249);
+      height:5px;
+      width:100% ;
+      text-align: center;
+      padding-top:10px;
+      opacity: 0.8;
+          }
+     
+     
+      #id_cat{display: table-cell;}
+
+      #id_hdr{background-color: rgb(161, 161, 243);
+        color:rgb(69, 27, 152);
+        font-family: "Lucida Console";}
+      
+      #orden{display: table-cell;}
+      
+      #Contenido{
+      margin:10px;
+      width:100%;
+      }
+     
+
+    table, th, td {
+      border: 0px solid;
+    }
+    a {
+  color: blue;
+   }
+   a:link {
+  text-decoration: none;
+  color:blue;
+}
+body{font-family: "Lucida Console";}
+
+.Fondo{
+  opacity: 1.0;
+  height: 100px;
+  border: 0px solid green;
+  padding: 15px;
+  margin: 2px;
+  opacity: 0.8;
+  border-radius: 150px;
+  text-align: left;
+  font-family: "Lucida Console";
+}
+
+#RAIZ{
+  font-weight: 600;
+  font-size: medium;
+}
+
+#hdr_tecs{background-color: rgb(244, 244, 248);
+  color:rgb(52, 11, 134);
+  height:5px;
+  width:100% ;
+  text-align: left;
+  padding-top:2px;
+  opacity: 1.0;
+  font-family: "Lucida Console";
+  font-size: small ;
+      }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertar Texto en la Posición del Cursor</title>
+</head>
+<body>
+    <h3>Insertar texto en la posición del cursor</h3>
+    
+    <!-- TextArea donde se insertará texto -->
+    <textarea id="miTextArea" rows="5" cols="40" placeholder="Escribe algo aquí..."></textarea>
+    <br>
+    
+    <!-- Botón para insertar texto -->
+    <button onclick="insertarTextoEnCursor('miTextArea','<br>')">br</button>
+    <button onclick="insertarTextoEnCursor('miTextArea','<b>')">b</button>
+    <button onclick="insertarTextoEnCursor('miTextArea','</b>')">/b</button>
+    <button onclick="insertarTextoEnCursor('miTextArea','<li>')">li</button>
+    <button onclick="insertarTextoEnCursor('miTextArea','</li>')">/li</button>
+    <button onclick="insertarTextoEnCursor('miTextArea','<h2>')">h2</button>
+    <button onclick="insertarTextoEnCursor('miTextArea','</h2>')">/h2</button>
+
+    <script>
+        function insertarTextoEnCursor(div,etiq) {
+            // Referencia al TextArea
+            const textArea = document.getElementById(div);
+
+            // Texto que queremos insertar
+            const texto = etiq;
+
+            // Obtener la posición del cursor
+            const start = textArea.selectionStart;
+            const end = textArea.selectionEnd;
+
+            // Obtener el texto antes y después del cursor
+            const textoAntes = textArea.value.substring(0, start);
+            const textoDespues = textArea.value.substring(end);
+
+            // Insertar el texto en la posición del cursor
+            textArea.value = textoAntes + texto + textoDespues;
+
+            // Colocar el cursor justo después del texto insertado
+            textArea.selectionStart = textArea.selectionEnd = start + texto.length;
+
+            // Dar foco de nuevo al TextArea
+            textArea.focus();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+.plantilla{
+    font-family: "Lucida Console";
+    color: rgb(53, 28, 28);
+    width: 100%;
+    border: 0x solid #b4b4b4;
+    background-color:rgba(232, 239, 214, 0.956);
+    letter-spacing: 0px;
+    word-spacing: 0.08em;
+    line-height: 18px;
+    text-align: left;
+}
+.plantilla h1 {
+     color: black;
+     background-color:rgba(232, 239, 214, 0.956);
+}
+.plantilla a {
+     color: white;
+     padding: 10px;
+     background-color:rgba(18, 227, 115, 0.956);
+
+}
+.plantilla header {
+text-align: center;
+background-color:rgba(232, 239, 214, 0.956);
+}
+
+.plantilla footer {
+
+text-align: left;
+background-color:rgba(232, 239, 214, 0.956);
+}
+
+
+
+.plantilla article {
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+}
+
+image {
+    width: 100%;
+    text-align: center;
+}

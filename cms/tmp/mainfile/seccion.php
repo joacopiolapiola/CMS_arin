@@ -7,7 +7,7 @@
             <thead>
                 <tr>
                     <th><strong>Nombre Seccion</strong></th>
-                    <th><strong>Id Tecnologia</strong></th>
+                    <th><strong>Id Topico</strong></th>
                     <th><strong>Orden</strong></th>
                     <th><strong>Enlace</strong></th>
                     <th><strong>Activo</strong></th>

@@ -33,7 +33,7 @@ $enlace_cms= '';
 		 </div>
 		 
 		 <div class="col-sm-2">
-		   <label>Id Tecnologia</label>
+		   <label>Id Topico</label>
 		   <input type="text" name="TxtId_tecnologia" class="form-control" id="TxtId_tecnologia">
 		 </div>
 		 

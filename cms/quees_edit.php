@@ -125,11 +125,11 @@ if ($operacion == 'edicion' || $operacion == 'baja'){
 		    <input type="text" value="<?php echo $titulo;?>" name="txtTitulo" class="form-control" >
 		  </div>
       <div class="col-sm-2">
-		   <label for="txtId_tecnologia">Id Tecnologia</label>
+		   <label for="txtId_tecnologia">Id Topico</label>
 		   <input type="text" value=<?php echo $id_tecnologia;?> name="txtId_tecnologia" id="txtId_tecnologia" class="form-control">
 		  </div>
       <div class="col-sm-3">
-		 <label for="nombre">Tecnologia :</label>
+		 <label for="nombre">Topico :</label>
 			<select id="nombre" name="nombre" onchange="PonerCodigoTec();" class="form-control">
 			<?php
 		  foreach($cats as $cat){

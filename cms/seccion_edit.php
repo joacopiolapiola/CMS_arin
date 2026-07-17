@@ -134,7 +134,7 @@ if ($operacion == 'edicion' || $operacion == 'baja'){
 		 </div>
 		 
 		 <div class="col-sm-2">
-		   <label for="TxtId_tecnologia">Id Tecnologia</label>
+		   <label for="TxtId_tecnologia">Id Topico</label>
 		   <input type="text" value=<?php echo $id_tecnologia;?> name="TxtId_tecnologia" class="form-control" id="TxtId_tecnologia">
 		 </div>
 		 

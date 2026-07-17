@@ -22,7 +22,7 @@ if (isset($hists)){
               <th width="5%">Seccion</th>
               <th width="15%">Titulo</th>
               <th width="30%">Contenido</th>
-			  <th width="5%">Id-Tec</th>
+			  <th width="5%">Id-Top</th>
 			  <th width="5%">Orden</th>
 			  <th width="10%">Enlace</th>
               <th width="5%">Activo</th>

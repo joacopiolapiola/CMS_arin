@@ -14,7 +14,7 @@
             name="orden" id="orden" class="demoInputBox" value="<?php echo $result["orden"]; ?>">
     </div>
     <div>
-        <label>Id. Tec"tnologia</label> <span id="id_tec-info" class="info"></span>
+        <label>Id. Topico</label> <span id="id_tec-info" class="info"></span>
         <input type=ext" name="id_tecnologia" id="id_tecnologia" class="demoInputBox"  value="<?php echo $result["id_tecnologia"]; ?>">
     </div>
     <div>

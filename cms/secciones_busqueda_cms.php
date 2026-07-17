@@ -20,7 +20,7 @@ if (isset($secs)){
 			  <tr>
 			  <th width="5%">Id</th>
               <th width="20%">Nombre</th>
-			  <th width="5%">Id-Tec</th>
+			  <th width="5%">Id-Top</th>
 			  <th width="5%">Orden</th>
 			  <th width="20%">Enlace</th>
               <th width="5%">Activo</th>

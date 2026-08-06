@@ -1,137 +1,213 @@
 <?php
-include_once("conexion.php");
+include_once "conexion.php";
 
-//ESTE CODIGO FUE MIGRADO DESDE LA EXTENSION ANTIGUA MYSQL A LA NUEVA MYSQLi
-//UTILIZANDO LA INTERFAZ ORIENTADA A OBJETOS (http://php.net/manual/es/mysqli.quickstart.dual-interface.php)
+class Seccion
+{
+    public $id_seccion;
+    public $nombre;
+    public $id_tecnologia;
+    public $orden;
+    public $enlace;
+    public $activo;
+    public $enlace_cms;
 
-class Seccion{
- public $id_seccion;
- public $nombre;
- public $id_tecnologia;
- public $orden;
- public $enlace;
- public $activo;
- public $enlace_cms;
- 
- function guardar(){  // crea la seccion
-    
-   
-   $sql="insert into secciones(nombre,id_tecnologia,orden,enlace,activo,enlace_cms)
-   values('$this->nombre','$this->id_tecnologia','$this->orden','$this->enlace','$this->activo','$this->enlace_cms')";
-   //mysql_query($sql);
-   $objConn = new Conexion();
-   $objConn->enlace->query($sql);
- }
- 
- function actualizar($nro=0)	// actualiza la seccion
-	{
-	        
-			$sql="update secciones set nombre='$this->nombre', id_tecnologia='$this->id_tecnologia'
-			,orden='$this->orden',enlace='$this->enlace',activo='$this->activo'
-			,enlace_cms='$this->enlace_cms' where id_seccion=$nro";
-			//mysql_query($sql); // ejecuta la consulta para actualizar
-			$objConn = new Conexion();
-            $objConn->enlace->query($sql);
-            			
-	}
-	
- function borrar($nro=0)	// elimina la seccion
+    private static function normalizar_fila($fila)
     {
-			$sql="delete from secciones where id_seccion=$nro";
-			//mysql_query($sql); // ejecuta la consulta para eliminar
-			$objConn = new Conexion();
-            $objConn->enlace->query($sql);
-			
-	
-	}	
-	
-static function traer_datos($nro=0) // declara el constructor, si trae el numero de seccion lo busca 
-	{
-		if ($nro!=0)
-		{
-			$sql="select * from secciones where id_seccion = $nro";
-			//$result=mysql_query($sql);
-			$objConn = new Conexion();
-            $result = $objConn->enlace->query($sql);
-			$recs=mysqli_num_rows($result);
-			$row=mysqli_fetch_array($result);
-			$id_seccion=$row['id_seccion'];
-			return $row;
-		}
-	}	
- 
- 
- static function filtrar($str=''){
- 	if(!is_numeric($str))
-	    $sql="select * from secciones where nombre like '%$str%' OR enlace like '%$str%' 
-	     order by orden";
-	 else   
-	 	$sql="select * from secciones where id_tecnologia='$str' order by orden";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
+        if (!is_array($fila)) {
+            return [];
+        }
 
- static function buscar(){
-    $sql="select * from secciones where activo = 1 order by orden";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
+        $normalized = [];
+        foreach ($fila as $key => $value) {
+            $normalized[$key] = $value;
+            $normalized[strtolower($key)] = $value;
+        }
 
- static function listar(){
-    $sql="select * from secciones order by orden";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
+        return $normalized;
+    }
 
-	
+    private static function normalizar_resultado($result)
+    {
+        $est = [];
+        while ($fila = $result->fetch_assoc()) {
+            $est[] = self::normalizar_fila($fila);
+        }
 
- static function nombres(){
-    $sql="select distinct nombre from secciones  order by nombre";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
- 
- 
+        return $est;
+    }
 
- static function enumerar(){
-    $sql="select distinct nombre,enlace_cms from secciones  order by nombre";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
- 
- }
+    private static function existe_nombre_duplicado($nombre, $excludeId = null)
+    {
+        $nombre = trim((string) $nombre);
+        if ($nombre === '') {
+            return false;
+        }
+
+        $sql = "SELECT 1 FROM secciones WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?))";
+        $params = 's';
+        $values = [$nombre];
+
+        if ($excludeId !== null) {
+            $sql .= " AND id_seccion != ?";
+            $params .= 'i';
+            $values[] = (int) $excludeId;
+        }
+
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param($params, ...$values);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc() !== null;
+    }
+
+    public function guardar()
+    {
+        if (self::existe_nombre_duplicado($this->nombre)) {
+            return false;
+        }
+
+        $sql = "INSERT INTO secciones (nombre, id_tecnologia, orden, enlace, activo, enlace_cms) VALUES (?, ?, ?, ?, ?, ?)";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('siisss', $this->nombre, $this->id_tecnologia, $this->orden, $this->enlace, $this->activo, $this->enlace_cms);
+        return $stmt->execute();
+    }
+
+    public function actualizar($nro = 0)
+    {
+        if (self::existe_nombre_duplicado($this->nombre, $nro)) {
+            return false;
+        }
+
+        $sql = "UPDATE secciones SET nombre = ?, id_tecnologia = ?, orden = ?, enlace = ?, activo = ?, enlace_cms = ? WHERE id_seccion = ?";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('siisssi', $this->nombre, $this->id_tecnologia, $this->orden, $this->enlace, $this->activo, $this->enlace_cms, $nro);
+        return $stmt->execute();
+    }
+
+    public function borrar($nro = 0)
+    {
+        $sql = "DELETE FROM secciones WHERE id_seccion = ?";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('i', $nro);
+        return $stmt->execute();
+    }
+
+    public static function traer_datos($nro = 0)
+    {
+        if ($nro != 0) {
+            $sql = "SELECT * FROM secciones WHERE id_seccion = ?";
+            $objConn = new Conexion();
+            $stmt = $objConn->enlace->prepare($sql);
+            if (!$stmt) {
+                return [];
+            }
+
+            $stmt->bind_param('i', $nro);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc() ?: [];
+            return self::normalizar_fila($row);
+        }
+
+        return [];
+    }
+
+    public static function filtrar($str = '')
+    {
+        $objConn = new Conexion();
+        $str = trim((string) $str);
+
+        if (!is_numeric($str)) {
+            $sql = "SELECT * FROM secciones WHERE nombre LIKE ? OR enlace LIKE ? ORDER BY orden";
+            $like = '%' . $str . '%';
+            $stmt = $objConn->enlace->prepare($sql);
+            if (!$stmt) {
+                return [];
+            }
+            $stmt->bind_param('ss', $like, $like);
+        } else {
+            $sql = "SELECT * FROM secciones WHERE id_tecnologia = ? ORDER BY orden";
+            $stmt = $objConn->enlace->prepare($sql);
+            if (!$stmt) {
+                return [];
+            }
+            $stmt->bind_param('i', $str);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+
+    public static function buscar()
+    {
+        $sql = "SELECT * FROM secciones WHERE activo = 1 ORDER BY orden";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+
+    public static function listar()
+    {
+        $sql = "SELECT * FROM secciones ORDER BY orden";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+
+    public static function nombres()
+    {
+        $sql = "SELECT DISTINCT nombre FROM secciones ORDER BY nombre";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+
+    public static function enumerar()
+    {
+        $sql = "SELECT DISTINCT nombre, enlace_cms FROM secciones ORDER BY nombre";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+}

@@ -1,23 +1,30 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-error_reporting(E_ALL); // Reportar todos los errores
-ini_set('display_errors', 1); // Mostrar errores en pantalla
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 
 header('Content-Type: application/json');
 include_once "clases/conexion.php";
 include_once "clases/usuarios.php";
 
-// Obtener los datos enviados desde JavaScript
-$datos = json_decode(file_get_contents('php://input'), true);
+$rawInput = file_get_contents('php://input');
+$datos = json_decode($rawInput, true);
 
-$nombre = $datos['username'];
-$email = $datos['email'];
-$password = $datos['password'];
-$institucion = $datos['school'];
-$telefono = $datos['phone'];
+if (!is_array($datos)) {
+    echo json_encode(['success' => false, 'message' => 'Datos de entrada inválidos.']);
+    exit;
+}
 
-// Validar los datos en el servidor (opcional, pero recomendado)
-if (empty($email) || empty($password)) {
+$nombre = trim((string) ($datos['username'] ?? ''));
+$email = trim((string) ($datos['email'] ?? ''));
+$password = (string) ($datos['password'] ?? '');
+$institucion = trim((string) ($datos['school'] ?? ''));
+$telefono = trim((string) ($datos['phone'] ?? ''));
+
+if ($nombre === '' || $email === '' || $password === '' || $institucion === '' || $telefono === '') {
     echo json_encode(['success' => false, 'message' => 'Todos los campos son obligatorios.']);
     exit;
 }
@@ -32,21 +39,23 @@ if (strlen($password) < 6) {
     exit;
 }
 
-// Aquí proceso los datos (guardo en una base de datos)
+if (!preg_match('/^[0-9]{10}$/', $telefono)) {
+    echo json_encode(['success' => false, 'message' => 'El teléfono debe contener 10 dígitos numéricos.']);
+    exit;
+}
 
-   $reg = new Usuario();
-   $reg->nombre=$nombre;
-   $reg->telefono=$telefono;
-   $reg->gmail=$email;
-   $reg->password=$password;
-   $reg->institucion=$institucion;
-   $ret=$reg->registro();
-   
-  
-   if($ret==true)
+$reg = new Usuario();
+$reg->nombre = $nombre;
+$reg->telefono = $telefono;
+$reg->gmail = $email;
+$reg->password = $password;
+$reg->institucion = $institucion;
+
+$ret = $reg->registro();
+
+if ($ret === true) {
     echo json_encode(['success' => true, 'message' => 'Usuario registrado exitosamente.']);
-   else
-    echo json_encode(['success' => false, 'message' => 'Error al registrar Usuario']);
- 
-  
+} else {
+    echo json_encode(['success' => false, 'message' => 'Error al registrar usuario. Verifique los datos e intente nuevamente.']);
+}
 

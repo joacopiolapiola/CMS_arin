@@ -1,142 +1,207 @@
 <?php
-include_once("conexion.php");
+include_once "conexion.php";
 
-//ESTE CODIGO FUE MIGRADO DESDE LA EXTENSION ANTIGUA MYSQL A LA NUEVA MYSQLi
-//UTILIZANDO LA INTERFAZ ORIENTADA A OBJETOS (http://php.net/manual/es/mysqli.quickstart.dual-interface.php)
+class Tecnologia
+{
+    public $id_tecnologia;
+    public $nombre;
+    public $abreviatura;
+    public $resumen;
+    public $logo;
+    public $orden;
+    public $activo;
+    public $definicion;
+    public $color;
+    public $bkg_color;
 
-class Tecnologia{
- public $id_tecnologia;
- public $nombre;
- public $abreviatura;
-  public $resumen;
- public $logo;
- public $orden;
- public $activo;
- public $definicion;
- public $color;
- public $bkg_color;
- 
- 
- function guardar(){  // crea la Persona
-    
-   
-   $sql="insert into tecnologias(nombre,abreviatura,resumen,definicion,logo,orden,activo,color,bkg_color)
-    values('$this->nombre','$this->abreviatura','$this->resumen','$this->definicion','$this->logo','$this->orden','$this->activo',
-   '$this->color','$this->bkg_color')";
-   //mysql_query($sql);
-   $objConn = new Conexion();
-   $objConn->enlace->query($sql);
- }
- 
- function actualizar($nro=0)	// actualiza la Persona
-	{
-	        
-			$sql="update tecnologias set nombre='$this->nombre', abreviatura='$this->abreviatura'
-			,orden='$this->orden',resumen='$this->resumen',definicion='$this->definicion',logo='$this->logo',activo='$this->activo',
-			color='$this->color',bkg_color='$this->bkg_color'
-             where id_tecnologia=$nro";
-			//mysql_query($sql); // ejecuta la consulta para actualizar
-			$objConn = new Conexion();
-            $objConn->enlace->query($sql);
-            			
-	}
-	
- function borrar($nro=0)	// elimina la Persona
-	{
-			$sql="delete from tecnologias where id_tecnologia=$nro";
-			//mysql_query($sql); // ejecuta la consulta para eliminar
-			$objConn = new Conexion();
-            $objConn->enlace->query($sql);
-			
-	
-	}	
-	
-static function traer_datos($nro=0) // declara el constructor, si trae el numero de persona lo busca 
-	{
-		if ($nro!=0)
-		{
-			$sql="select * from tecnologias where id_tecnologia = $nro";
-			//$result=mysql_query($sql);
-			$objConn = new Conexion();
-            $result = $objConn->enlace->query($sql);
-			$recs=mysqli_num_rows($result);
-			$row=mysqli_fetch_array($result,MYSQLI_BOTH);
-			$id_tecnologia=$row['ID_tecnologia'];
-			return $row;
-		}
-	}	
- 
- 
- 
- static function buscar(){
-    $sql="select * from tecnologias where activo = 1 order by orden";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
+    private static function normalizar_fila($fila)
+    {
+        if (!is_array($fila)) {
+            return [];
+        }
 
- static function buscar_todas(){
-    $sql="select * from tecnologias order by id_tecnologia";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
+        $normalized = [];
+        foreach ($fila as $key => $value) {
+            $normalized[$key] = $value;
+            $normalized[strtolower($key)] = $value;
+        }
 
- static function buscar_raiz(){
-    $sql="select * from raiz where id_raiz = 0 AND activo = 1 order by orden";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$result = $objConn->enlace->query($sql);
-	$recs=mysqli_num_rows($result);
-	$row=mysqli_fetch_array($result,MYSQLI_BOTH);
-	return $row;
-	/*
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
-	*/
- 
- }
+        return $normalized;
+    }
 
- static function seleccionar(){
-    $sql="select nombre,id_tecnologia from tecnologias order by nombre ASC";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
+    private static function normalizar_resultado($result)
+    {
+        $est = [];
+        while ($fila = $result->fetch_assoc()) {
+            $est[] = self::normalizar_fila($fila);
+        }
 
- static function filtrar($str=''){
-    $sql="select * from tecnologias where nombre like '%$str%' OR abreviatura like '%$str%' OR  id_tecnologia='$str' order by orden";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
- 
- }
+        return $est;
+    }
+
+    private static function existe_nombre_duplicado($nombre, $excludeId = null)
+    {
+        $nombre = trim((string) $nombre);
+        if ($nombre === '') {
+            return false;
+        }
+
+        $sql = "SELECT 1 FROM tecnologias WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?))";
+        $params = 's';
+        $values = [$nombre];
+
+        if ($excludeId !== null) {
+            $sql .= " AND id_tecnologia != ?";
+            $params .= 'i';
+            $values[] = (int) $excludeId;
+        }
+
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param($params, ...$values);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc() !== null;
+    }
+
+    public function guardar()
+    {
+        if (self::existe_nombre_duplicado($this->nombre)) {
+            return false;
+        }
+
+        $sql = "INSERT INTO tecnologias (nombre, abreviatura, resumen, definicion, logo, orden, activo, color, bkg_color)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('sssssisss', $this->nombre, $this->abreviatura, $this->resumen, $this->definicion, $this->logo, $this->orden, $this->activo, $this->color, $this->bkg_color);
+        return $stmt->execute();
+    }
+
+    public function actualizar($nro = 0)
+    {
+        if (self::existe_nombre_duplicado($this->nombre, $nro)) {
+            return false;
+        }
+
+        $sql = "UPDATE tecnologias SET nombre = ?, abreviatura = ?, orden = ?, resumen = ?, definicion = ?, logo = ?, activo = ?, color = ?, bkg_color = ? WHERE id_tecnologia = ?";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('ssissssssi', $this->nombre, $this->abreviatura, $this->orden, $this->resumen, $this->definicion, $this->logo, $this->activo, $this->color, $this->bkg_color, $nro);
+        return $stmt->execute();
+    }
+
+    public function borrar($nro = 0)
+    {
+        $sql = "DELETE FROM tecnologias WHERE id_tecnologia = ?";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('i', $nro);
+        return $stmt->execute();
+    }
+
+    public static function traer_datos($nro = 0)
+    {
+        if ($nro != 0) {
+            $sql = "SELECT * FROM tecnologias WHERE id_tecnologia = ?";
+            $objConn = new Conexion();
+            $stmt = $objConn->enlace->prepare($sql);
+            if (!$stmt) {
+                return [];
+            }
+
+            $stmt->bind_param('i', $nro);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc() ?: [];
+            return self::normalizar_fila($row);
+        }
+
+        return [];
+    }
+
+    public static function buscar()
+    {
+        $sql = "SELECT * FROM tecnologias WHERE activo = 1 ORDER BY orden";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        return self::normalizar_resultado($stmt->get_result());
+    }
+
+    public static function buscar_todas()
+    {
+        $sql = "SELECT * FROM tecnologias ORDER BY id_tecnologia";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        return self::normalizar_resultado($stmt->get_result());
+    }
+
+    public static function buscar_raiz()
+    {
+        $sql = "SELECT * FROM raiz WHERE id_raiz = 0 AND activo = 1 ORDER BY orden";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc() ?: [];
+        return self::normalizar_fila($row);
+    }
+
+    public static function seleccionar()
+    {
+        $sql = "SELECT nombre, id_tecnologia FROM tecnologias ORDER BY nombre ASC";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        return self::normalizar_resultado($stmt->get_result());
+    }
+
+    public static function filtrar($str = '')
+    {
+        $objConn = new Conexion();
+        $str = trim((string) $str);
+
+        if ($str === '') {
+            return self::buscar();
+        }
+
+        $sql = "SELECT * FROM tecnologias WHERE nombre LIKE ? OR abreviatura LIKE ? OR id_tecnologia = ? ORDER BY orden";
+        $like = '%' . $str . '%';
+        $id = is_numeric($str) ? (int) $str : 0;
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->bind_param('ssi', $like, $like, $id);
+        $stmt->execute();
+        return self::normalizar_resultado($stmt->get_result());
+    }
+}

@@ -92,6 +92,9 @@ README.md                # Notas del repositorio (lista de issues/limitaciones)
 - Estilos: css/main.css y otros CSS por página en `css/`
 - Scripts cliente: js/main.js y js/comodin.js
 
+
+
+
 ## Cómo ejecutarlo (rápido)
 1. Clonar el repositorio.
 2. Importar la base de datos:
@@ -110,17 +113,8 @@ README.md                # Notas del repositorio (lista de issues/limitaciones)
    - Página pública: `index.php`
    - Admin: abrir `cms/` y usar las páginas de alta/edición (según cómo estén protegidas; revisar `cms/` para control de sesiones).
 
-## Limitaciones / notas (sacadas del README original)
-- No hay control de duplicados de secciones desde la interfaz.
-- No existe UI para cambiar color de fondo o color del CMS.
-- Algunas funcionalidades (música de fondo, fotos de perfil, comentarios, búsqueda avanzada) no están implementadas.
 
-## Preguntas útiles que podrías hacer a continuación
-- ¿Dónde se validan las credenciales de usuario en el código? (buscar en `procesar_login.php` y `clases/usuarios.php`)
-- ¿Cómo se almacena el logo y configuración global? (revisar `clases/raiz.php` y `raiz_cms.php`)
-- ¿Qué campos tiene la tabla `secciones` en la BD y cómo mapearlos con los formularios de `cms/seccion_alta.php`? (revisar `sql/127_0_0_1 (1).sql` para el esquema)
 
----
 
 
 # Documentación de Archivos en la Carpeta /cms
@@ -625,13 +619,6 @@ Ya documentado en la sección de ABM.
 
 ---
 
-### 38. **n.txt**
-**Descripción:** Archivo de texto con un solo carácter.
-
-**Funciones:** Ninguna identificable
-
----
-
 ## Directorios en /cms
 
 - **`bootstrap/`** - Contiene archivos JavaScript y CSS del framework
@@ -680,8 +667,3 @@ La mayoría de entidades (Tecnología, Historia, Recurso, Sección, Usuario, Que
 6. **Edición/Eliminación**: Clic en botón Editar/Borrar → Datos se procesan en `*_edit.php`
 7. **Redirección**: Tras operación, redirecciona a página anterior
 
-
-
-Si quieres, puedo:
-- Generar un archivo DOCUMENTACION.md listo para añadir al repo con este contenido.
-- Hacer una lista más detallada de rutas y parámetros de cada formulario (si deseas que inspeccione archivos específicos como `procesar_login.php`, `clases/conexion.php` o `js/main.js`).

@@ -1,160 +1,232 @@
 <?php
-include_once("conexion.php");
+include_once "conexion.php";
 
+class Usuario
+{
+    public $id_usuario;
+    public $nombre;
+    public $telefono;
+    public $roles;
+    public $gmail;
+    public $password;
+    public $permisos;
+    public $institucion;
+    public $rol_institucion;
 
-class Usuario{
- public $id_usuario;
- public $nombre;
- public $telefono;
- public $roles;
- public $gmail;
- public $password;
- public $permisos;
- public $institucion;
- public $rol_institucion;
- 
- function guardar(){  
-    
-   
-   $sql="insert into usuarios(nombre,telefono,roles,email,password,permisos,institucion,Rol_institucion)
-   values('$this->nombre','$this->telefono','$this->roles','$this->gmail','$this->password',
-   '$this->permisos','$this->institucion','$this->rol_institucion')";
-   //mysql_query($sql);
-   $objConn = new Conexion();
-   $objConn->enlace->query($sql);
- }
-  function registro(){  
-    $tmp=password_hash($this->password, PASSWORD_DEFAULT);
-	$sql="insert into usuarios(nombre,telefono,email,password,Institucion)
-	values('$this->nombre','$this->telefono','$this->gmail','$tmp',
-	'$this->institucion')";
-	//mysql_query($sql);
-	$objConn = new Conexion();
-	$ret=$objConn->enlace->query($sql);
-	return true;
-  }
-
- function actualizar($nro=0)	// actualiza la seccion
-	{
-	        
-			$sql="update usuarios set nombre='$this->nombre', telefono='$this->telefono'
-			,roles='$this->roles',email='$this->gmail'
-			,permisos='$this->permisos',Institucion='$this->institucion',
-			Rol_institucion='$this->rol_institucion' where ID_usuario=$nro";
-			//mysql_query($sql); // ejecuta la consulta para actualizar
-			$objConn = new Conexion();
-            $objConn->enlace->query($sql);
-            			
-	}
-	
- function borrar($nro=0)	// elimina la seccion
+    private static function normalizar_fila($fila)
     {
-			$sql="delete from usuario where ID_usuario=$nro";
-			//mysql_query($sql); // ejecuta la consulta para eliminar
-			$objConn = new Conexion();
-            $objConn->enlace->query($sql);
-			
-	
-	}	
-	
-static function traer_datos($nro=0) // declara el constructor, si trae el numero de seccion lo busca 
-	{
-		if ($nro!=0)
-		{
-			$sql="select * from usuarios where ID_usuario = $nro";
-			//$result=mysql_query($sql);
-			$objConn = new Conexion();
-            $result = $objConn->enlace->query($sql);
-			$recs=mysqli_num_rows($result);
-			$row=mysqli_fetch_array($result);
-			$ID_usuario=$row['ID_usuario'];
-			return $row;
-		}
-	}	
- 
- 
- static function filtrar($str='',$tipo=''){
-	switch($tipo){
- 	 case 'login':
-		$sql="select * from usuarios where  email = '$str' ";
-		break;
-	 case 'buscar':	
-	    $sql="select * from usuarios where nombre like '%$str%' OR email like '%$str%' 
-	     OR institucion like '%$str%'  order by ID_usuario";
-		 break;
-	 case 'id':   
-	 	$sql="select * from usuarios where ID_usuario='$str' ";
-		break;
-    //$rs=mysql_query($sql);
-	}
-	
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}
-	
-	return $est;
- 
- }
+        if (!is_array($fila)) {
+            return [];
+        }
 
- static function buscar($str=''){
-    $sql="select * from usuarios where nombre like '%$str%' OR gmail like '%$str%' 
-	     OR institucion like '%$str%'  order by ID_usuario";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
+        $normalized = [];
+        foreach ($fila as $key => $value) {
+            $normalized[$key] = $value;
+            $normalized[strtolower($key)] = $value;
+        }
 
- static function listar(){
-    $sql="select * from usuarios order by nombre";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
+        return $normalized;
+    }
 
-	
+    private static function normalizar_resultado($result)
+    {
+        $est = [];
+        while ($fila = $result->fetch_assoc()) {
+            $est[] = self::normalizar_fila($fila);
+        }
 
- static function nombres(){
-    $sql="select distinct nombre from usuarios  order by nombre";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
- 
- 
+        return $est;
+    }
 
- static function enumerar(){
-    $sql="select distinct nombre,institucion from usuarios  order by nombre";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
- 
- }
+    public function guardar()
+    {
+        $sql = "INSERT INTO usuarios (nombre, telefono, roles, email, password, permisos, institucion, Rol_institucion)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $conn = new Conexion();
+        $stmt = $conn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param(
+            'ssssssss',
+            $this->nombre,
+            $this->telefono,
+            $this->roles,
+            $this->gmail,
+            $this->password,
+            $this->permisos,
+            $this->institucion,
+            $this->rol_institucion
+        );
+
+        return $stmt->execute();
+    }
+
+    public function registro()
+    {
+        $tmp = password_hash($this->password, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO usuarios (nombre, telefono, email, password, Institucion) VALUES (?, ?, ?, ?, ?)";
+        $conn = new Conexion();
+        $stmt = $conn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('sssss', $this->nombre, $this->telefono, $this->gmail, $tmp, $this->institucion);
+        return $stmt->execute();
+    }
+
+    public function actualizar($nro = 0)
+    {
+        $sql = "UPDATE usuarios SET nombre = ?, telefono = ?, roles = ?, email = ?, permisos = ?, Institucion = ?, Rol_institucion = ? WHERE ID_usuario = ?";
+        $conn = new Conexion();
+        $stmt = $conn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('sssssssi', $this->nombre, $this->telefono, $this->roles, $this->gmail, $this->permisos, $this->institucion, $this->rol_institucion, $nro);
+        return $stmt->execute();
+    }
+
+    public function borrar($nro = 0)
+    {
+        $sql = "DELETE FROM usuarios WHERE ID_usuario = ?";
+        $conn = new Conexion();
+        $stmt = $conn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('i', $nro);
+        return $stmt->execute();
+    }
+
+    public static function traer_datos($nro = 0)
+    {
+        if ($nro != 0) {
+            $sql = "SELECT * FROM usuarios WHERE ID_usuario = ?";
+            $objConn = new Conexion();
+            $stmt = $objConn->enlace->prepare($sql);
+            if (!$stmt) {
+                return [];
+            }
+
+            $stmt->bind_param('i', $nro);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc() ?: [];
+            if (empty($row)) {
+                return [];
+            }
+
+            return self::normalizar_fila($row);
+        }
+
+        return [];
+    }
+
+    public static function filtrar($str = '', $tipo = '')
+    {
+        $conn = new Conexion();
+        $str = trim((string) $str);
+
+        switch ($tipo) {
+            case 'login':
+                $sql = "SELECT * FROM usuarios WHERE email = ?";
+                $stmt = $conn->enlace->prepare($sql);
+                if (!$stmt) {
+                    return [];
+                }
+                $stmt->bind_param('s', $str);
+                break;
+            case 'buscar':
+                $like = '%' . $str . '%';
+                $sql = "SELECT * FROM usuarios WHERE nombre LIKE ? OR email LIKE ? OR institucion LIKE ? ORDER BY ID_usuario";
+                $stmt = $conn->enlace->prepare($sql);
+                if (!$stmt) {
+                    return [];
+                }
+                $stmt->bind_param('sss', $like, $like, $like);
+                break;
+            case 'id':
+                $sql = "SELECT * FROM usuarios WHERE ID_usuario = ?";
+                $stmt = $conn->enlace->prepare($sql);
+                if (!$stmt) {
+                    return [];
+                }
+                $stmt->bind_param('i', $str);
+                break;
+            default:
+                $like = '%' . $str . '%';
+                $sql = "SELECT * FROM usuarios WHERE nombre LIKE ? OR email LIKE ? OR institucion LIKE ? ORDER BY ID_usuario";
+                $stmt = $conn->enlace->prepare($sql);
+                if (!$stmt) {
+                    return [];
+                }
+                $stmt->bind_param('sss', $like, $like, $like);
+                break;
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return self::normalizar_resultado($result);
+    }
+
+    public static function buscar($str = '')
+    {
+        $sql = "SELECT * FROM usuarios WHERE nombre LIKE ? OR email LIKE ? OR institucion LIKE ? ORDER BY ID_usuario";
+        $conn = new Conexion();
+        $stmt = $conn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $like = '%' . trim((string) $str) . '%';
+        $stmt->bind_param('sss', $like, $like, $like);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+
+    public static function listar()
+    {
+        $sql = "SELECT * FROM usuarios ORDER BY nombre";
+        $conn = new Conexion();
+        $stmt = $conn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+
+    public static function nombres()
+    {
+        $sql = "SELECT DISTINCT nombre FROM usuarios ORDER BY nombre";
+        $conn = new Conexion();
+        $stmt = $conn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+
+    public static function enumerar()
+    {
+        $sql = "SELECT DISTINCT nombre, institucion FROM usuarios ORDER BY nombre";
+        $conn = new Conexion();
+        $stmt = $conn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return self::normalizar_resultado($result);
+    }
+}

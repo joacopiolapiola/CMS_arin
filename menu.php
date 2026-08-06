@@ -79,16 +79,22 @@ $n_seccs=9;
   <script>
    function poner_cat(div)
    {
-   let ix=div.slice(1);
+   if (!div) return;
+   const ix = Number(String(div).replace(/^M|^#/, ''));
+   if (!Number.isFinite(ix) || !categorias[ix - 1]) return;
    
-   let nombre=document.getElementById(div).innerHTML;
-   document.getElementById("hdr_cat").innerHTML='<H3>'+categorias[ix-1].nombre+'</H3>';
+   const nombre=document.getElementById(div)?.innerHTML;
+   const hdr = document.getElementById("hdr_cat");
+   if (hdr) {
+     hdr.innerHTML='<H3>'+categorias[ix-1].nombre+'</H3>';
+   }
    //toggleVis('submenu');
    //poner_secciones();
    } 
    function poner_p40()
    {
-      document.getElementById("hdr_cat").innerHTML='<H3>Plataforma</H3>';
+      const hdr = document.getElementById("hdr_cat");
+      if (hdr) hdr.innerHTML='<H3>Plataforma</H3>';
    //toggleVis('submenu');
    //poner_secciones();
    } 
@@ -105,8 +111,11 @@ $n_seccs=9;
       
     for(i=0;i<secciones.length;i++){
       id="S"+(i+1);
-      //$(id).text(secciones[i].nombre);
-      document.getElementById(id).innerHTML=secciones[i].nombre;
+      const el = document.getElementById(id);
+      if (el) {
+        //$(id).text(secciones[i].nombre);
+        el.innerHTML=secciones[i].nombre;
+      }
       
 
     }
@@ -117,6 +126,7 @@ $n_seccs=9;
    <script>
     function toggleVis(div) {
         const elemento = document.getElementById(div);
+        if (!elemento) return;
         if (elemento.style.visibility === 'hidden') {
             elemento.style.visibility = 'visible';
         } else {

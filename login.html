@@ -79,14 +79,16 @@
             .then(data => {
                 
                 if (data.success) {
-                    //alert('Login exitoso: ' + data.message);
-                    
-                    poner_username(data.usuario,data.roles);
+                    const roles = Array.isArray(data.roles) ? data.roles : [data.roles];
+                    const normalized = roles.map(r => String(r || '').toLowerCase());
+
+                    poner_username(data.usuario, normalized.join(', '));
                     poner_p40();
-                    
-                    if(data.roles=='administrador'){
+
+                    if (normalized.includes('administrador') || normalized.includes('admin') || normalized.includes('superadmin')) {
                       poner_opcion_cms();
-                      
+                    } else {
+                      sacar_opcion_cms();
                     }
 
                 } else {

@@ -104,6 +104,9 @@ $n_cats=count($tecnologias);
       <div class="col-sm-2" id="rol_user" ></div>
       <div class="col-sm-2" id="cms_in" ></div>
       <div class="col-sm-2" ></div>
+      <div class="col-sm-2" id="chat_general"><a href="#" onclick="cargar('#Contenido','chat.php')">Chat general</a></div>
+      <div class="col-sm-2" id="foro_general"><a href="#" onclick="cargar('#Contenido','foro.php')">Foro</a></div>
+      <div class="col-sm-2" id="encuestas_general"><a href="#" onclick="cargar('#Contenido','encuesta.php')">Encuestas</a></div>
       <div class="col-sm-2" id="entrar"><a href="#" onclick="cargar('#Contenido','login.html')">Ingreso</a></div>
       <div class="col-sm-2" id="registro"><a href="#" onclick="cargar('#Contenido','registro.html')">Registro</a></div>
    </div>  
@@ -172,6 +175,51 @@ $n_cats=count($tecnologias);
 
 
     </div>
+
+    <button type="button" id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙 Modo oscuro</button>
+
+    <script>
+      (function () {
+        const body = document.body;
+        const toggle = document.getElementById('themeToggle');
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function applyTheme(theme) {
+          const isDark = theme === 'dark';
+          body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+          if (toggle) {
+            toggle.textContent = isDark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+            toggle.setAttribute('aria-pressed', String(isDark));
+          }
+          localStorage.setItem('site_theme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('site_theme');
+        const initialTheme = savedTheme || (mediaQuery.matches ? 'dark' : 'light');
+        applyTheme(initialTheme);
+
+        if (toggle) {
+          toggle.addEventListener('click', function () {
+            const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(currentTheme);
+          });
+        }
+
+        if (typeof mediaQuery.addEventListener === 'function') {
+          mediaQuery.addEventListener('change', function (event) {
+            if (!localStorage.getItem('site_theme')) {
+              applyTheme(event.matches ? 'dark' : 'light');
+            }
+          });
+        } else if (typeof mediaQuery.addListener === 'function') {
+          mediaQuery.addListener(function (event) {
+            if (!localStorage.getItem('site_theme')) {
+              applyTheme(event.matches ? 'dark' : 'light');
+            }
+          });
+        }
+      })();
+    </script>
 
     <?php
      for($i=0;$i<$n_cats;$i++){

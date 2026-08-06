@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/_cms_guard.php';
+
 $n_cats=4;
 $n_seccs=9;
 include_once "../clases/secciones.php";
@@ -69,9 +70,9 @@ $n_seccs=count($secciones);
       
     <?php
      for($i=0;$i<$n_cats;$i++){
-        $id="M".$i+1;
-       
-        echo ('<div class="col-sm-2 i_menu " id="'.$id.'">Menu</div>');
+       $id = "M" . ($i + 1);
+      
+       echo ('<div class="col-sm-2 i_menu " id="'.$id.'">Menu</div>');
      }
      
     ?>
@@ -84,9 +85,9 @@ $n_seccs=count($secciones);
       
     <?php
      for($i=0;$i<$n_seccs;$i++){
-        $id="S".$i+1;
-       
-        echo ('<div class="col-sm i_smenu " id="'.$id.'">SubMenu</div>');
+       $id = "S" . ($i + 1);
+      
+       echo ('<div class="col-sm i_smenu " id="'.$id.'">SubMenu</div>');
      }
      
     ?>
@@ -114,15 +115,63 @@ $n_seccs=count($secciones);
 
 
 
-    </>
+    </div>
 
     <?php
      for($i=0;$i<$n_cats;$i++){
-        $id="#M".$i+1;
-        echo '<script>poner_menu("'.$id.'",categorias['.$i.'].nombre);</script>';
+       $id = "#M" . ($i + 1);
+       echo '<script>poner_menu("'.$id.'",categorias['.$i.'].nombre);</script>';
 
      }
     ?>
+    <div class="mt-3 text-center">
+      <button type="button" class="btn btn-primary" onclick="cargar('#Contenido', 'encuestas_cms.php')">Gestionar encuestas</button>
+    </div>
+    <button type="button" id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙 Modo oscuro</button>
+
+    <script>
+      (function () {
+        const body = document.body;
+        const toggle = document.getElementById('themeToggle');
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function applyTheme(theme) {
+          const isDark = theme === 'dark';
+          body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+          if (toggle) {
+            toggle.textContent = isDark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+            toggle.setAttribute('aria-pressed', String(isDark));
+          }
+          localStorage.setItem('site_theme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('site_theme');
+        const initialTheme = savedTheme || (mediaQuery.matches ? 'dark' : 'light');
+        applyTheme(initialTheme);
+
+        if (toggle) {
+          toggle.addEventListener('click', function () {
+            const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(currentTheme);
+          });
+        }
+
+        if (typeof mediaQuery.addEventListener === 'function') {
+          mediaQuery.addEventListener('change', function (event) {
+            if (!localStorage.getItem('site_theme')) {
+              applyTheme(event.matches ? 'dark' : 'light');
+            }
+          });
+        } else if (typeof mediaQuery.addListener === 'function') {
+          mediaQuery.addListener(function (event) {
+            if (!localStorage.getItem('site_theme')) {
+              applyTheme(event.matches ? 'dark' : 'light');
+            }
+          });
+        }
+      })();
+    </script>
+
     <script>poner_submenu();</script>
     <script>poner_tecnos();</script>
     <!--script src="bootstrap/seccion_f.js"></script--->

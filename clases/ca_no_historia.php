@@ -1,118 +1,132 @@
 <?php
 include_once("conexion.php");
 
+class historia
+{
+    public $id_historia;
+    public $id_tecnologia;
+    public $nombre;
+    public $contenido;
+    public $link;
+    public $activo;
+    public $orden;
 
-class historia{
- public $id_historia;
- public $id_tecnologia;
- public $nombre;
- public $contenido;
- public $link;
-  public $activo;
+    public function guardar()
+    {
+        $sql = "INSERT INTO historia (id_tecnologia, nombre, contenido, ordenamiento, activo, link_referencia) VALUES (?, ?, ?, ?, ?, ?)";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
 
-  public $orden;
+        $stmt->bind_param('ississ', $this->id_tecnologia, $this->nombre, $this->contenido, $this->orden, $this->activo, $this->link);
+        return $stmt->execute();
+    }
 
- 
- function guardar(){  // creae cartel
-    
-  
-   $sql="insert into historia(id_tecnologia,nombre,contenido,ordenamiento,activo,link_referencia)
-   values('$this->id_tecnologia','$this->nombre','$this->contenido','$this->orden',
-  '$this->activo','$this->link')";
-   //mysql_query($sql);
-   $objConn = new Conexion();
-   $objConn->enlace->query($sql);
- }
- 
- function actualizar($nro=0)	// actualiza cartel
-	{
-	        
-			$sql="update historia set id_tecnologia='$this->id_tecnologia', nombre='$this->nombre',contenido='$this->contenido'
-			,ordenamiento='$this->orden',activo='$this->activo',link_referencia='$this->link'  
-			 where id_recurso = $nro";
-			//mysql_query($sql); // ejecuta la consulta para actualizar
-			$objConn = new Conexion();
-            $objConn->enlace->query($sql);
-            			
-	}
-	
- 
- function borrar($nro=0)	
-	{
-	        echo $nro;
-			$sql="delete from historia where id_recurso = $nro";
-			$objConn = new Conexion();
-            $objConn->enlace->query($sql);
-			
-	
-	}	
-	
-function traer_datos($nro=0) // declara el constructor, si trae el numero de persona lo busca 
-	{
-		if ($nro!=0)
-		{
-			$sql="select * from historia where id_recurso = $nro";
-			//$result=mysql_query($sql);
-			$objConn = new Conexion();
-            $result = $objConn->enlace->query($sql);
-			$recs=mysqli_num_rows($result);
-			$row=mysqli_fetch_array($result);
-			$id=$row['id_recurso'];
-			
-			return $row;
-		}
-	}	
- 
- 
- 
- static function buscar($str){
-    $sql="select * from historias where nombre like '%$str%' or contenido like '%$str%' or link like '%$str%' or id_recurso='$str' ";
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
- 
- static function seleccionar($str){
-    $sql="select * from historias where id_tecnologia = '$str' AND activo = 1 ";
+    public function actualizar($nro = 0)
+    {
+        $sql = "UPDATE historia SET id_tecnologia = ?, nombre = ?, contenido = ?, ordenamiento = ?, activo = ?, link_referencia = ? WHERE id_recurso = ?";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
 
-	/*
-    if(is_numeric($str)){
-	 $sql="select * from recursos where id_recurso = '$str' ";
-	}
-	 */
-	//echo $sql;
-    
-    //$rs=mysql_query($sql);
-	$objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
- 
- static function id_tecnologias(){
-    $sql="select id_tecnologia,count(id_recurso) from recursos where activo=1 group by id_tecnologia";
-    
-	//echo $sql;
-    
-    $objConn = new Conexion();
-	$rs=$objConn->enlace->query($sql);
-	$est=array();
-	//while($fila=mysql_fetch_assoc($rs) > 0){
-	while($fila=mysqli_fetch_assoc($rs)){
-	  $est[]=$fila;
-	}return $est;
- 
- }
- 
- 
+        $stmt->bind_param('issisii', $this->id_tecnologia, $this->nombre, $this->contenido, $this->orden, $this->activo, $this->link, $nro);
+        return $stmt->execute();
+    }
+
+    public function borrar($nro = 0)
+    {
+        $sql = "DELETE FROM historia WHERE id_recurso = ?";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('i', $nro);
+        return $stmt->execute();
+    }
+
+    public function traer_datos($nro = 0)
+    {
+        if ($nro != 0) {
+            $sql = "SELECT * FROM historia WHERE id_recurso = ?";
+            $objConn = new Conexion();
+            $stmt = $objConn->enlace->prepare($sql);
+            if (!$stmt) {
+                return [];
+            }
+
+            $stmt->bind_param('i', $nro);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_assoc() ?: [];
+        }
+
+        return [];
+    }
+
+    public static function buscar($str)
+    {
+        $str = trim((string) $str);
+        $sql = "SELECT * FROM historia WHERE nombre LIKE ? OR contenido LIKE ? OR link_referencia LIKE ? OR CAST(id_recurso AS CHAR) = ?";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+
+        $like = '%' . $str . '%';
+        $stmt->bind_param('ssss', $like, $like, $like, $str);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $est = [];
+        while ($fila = $result->fetch_assoc()) {
+            $est[] = $fila;
+        }
+
+        return $est;
+    }
+
+    public static function seleccionar($str)
+    {
+        $sql = "SELECT * FROM historia WHERE id_tecnologia = ? AND activo = 1";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+
+        $stmt->bind_param('i', $str);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $est = [];
+        while ($fila = $result->fetch_assoc()) {
+            $est[] = $fila;
+        }
+
+        return $est;
+    }
+
+    public static function id_tecnologias()
+    {
+        $sql = "SELECT id_tecnologia, COUNT(id_recurso) AS total FROM historia WHERE activo = 1 GROUP BY id_tecnologia";
+        $objConn = new Conexion();
+        $stmt = $objConn->enlace->prepare($sql);
+        if (!$stmt) {
+            return [];
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $est = [];
+        while ($fila = $result->fetch_assoc()) {
+            $est[] = $fila;
+        }
+
+        return $est;
+    }
 }

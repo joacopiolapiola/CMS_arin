@@ -11,8 +11,17 @@
     <button onclick="insertarTextoEnCursor('txtContenido','</i>')">/i</button>
     
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/comodin.php";
 include_once "../clases/tecnologias.php";
+
+$_POST = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_POST ?? []);
+
+$_GET = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_GET ?? []);
 
 
 

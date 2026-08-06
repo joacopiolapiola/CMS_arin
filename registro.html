@@ -127,12 +127,7 @@
             */
             // Si no hay errores, enviar el formulario
             if (!hasErrors) {
-                alert('Formulario enviado exitosamente.');
-                //alert('email:'+email+password+username+phone+school)
-                enviarDatosAlServidor({ email, password,username,phone,school });
-                
-                // Aquí es donde normalmente se enviaría el formulario a un servidor
-                // Ejemplo: this.submit();
+                enviarDatosAlServidor({ email, password, username, phone, school });
             }
         });
 

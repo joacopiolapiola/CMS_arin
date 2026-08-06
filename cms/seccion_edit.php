@@ -96,6 +96,10 @@ if (!empty($_GET)) {
   if ($operacion == 'agregar'){
       
     $seccion->nombre=$_POST['txtNombre'];
+
+	if (preg_match('/\s/', $seccion->$nombre)) {
+    	die("El nombre de la sección no puede contener espacios.");
+	}
     $seccion->id_tecnologia=$_POST['TxtId_tecnologia'];
     $seccion->orden=$_POST['txtOrden'];
     $seccion->enlace=$_POST['txtEnlace'];

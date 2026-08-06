@@ -29,7 +29,7 @@ $enlace_cms= '';
 	 <div class="row" >
 	     <div class="col-sm-6">
 		  <label>Nombre</label>
-		  <input type="text"  size="20" name="txtNombre" class="form-control" id="txtNombre" >
+		  <input type="text" size="20" name="txtNombre" class="form-control" id="txtNombre" oninput="this.value = this.value.replace(/\s/g, '')">
 		 </div>
 		 
 		 <div class="col-sm-2">

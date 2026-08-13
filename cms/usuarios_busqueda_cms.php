@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 //include_once("../clases/conexion.php");
 include_once "../clases/usuarios.php";
 

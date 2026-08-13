@@ -1,5 +1,14 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/secciones.php";
+
+$_POST = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_POST ?? []);
+
+$_GET = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_GET ?? []);
 
 
 $cats=Seccion::nombres();
@@ -58,7 +67,11 @@ if (!empty($_POST)) {
   
   
   
-  $seccion->actualizar($_GET['id_seccion']);
+  $ok = $seccion->actualizar($_GET['id_seccion']);
+  if (!$ok) {
+    header('Location: seccion_edit.php?operacion=edicion&id_seccion=' . (int) $_GET['id_seccion'] . '&error=duplicado');
+    exit;
+  }
   
   header("Location: ".$_SERVER['HTTP_REFERER']);
   //echo "<script>preparar('#hdr_menu','secciones_cms.php','#id_hdr','SECCIONES');</script>";
@@ -106,7 +119,11 @@ if (!empty($_GET)) {
     $seccion->activo=$_POST['txtActivo'];
     $seccion->enlace_cms=$_POST['txtEnlace_cms'];
       
-  $seccion->guardar();
+  $ok = $seccion->guardar();
+  if (!$ok) {
+    header('Location: seccion_alta.php?error=duplicado');
+    exit;
+  }
   header("Location: ".$_SERVER['HTTP_REFERER']);
   }
   if ($operacion == 'borrar' && isset($_GET['id_seccion'])){

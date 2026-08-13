@@ -1,10 +1,20 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/usuarios.php";
+
+$_POST = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_POST ?? []);
+
+$_GET = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_GET ?? []);
 
 
 $datos = new Usuario();
 $usuario = new Usuario();
 
+$operacion = '';
 $id_usuario= '';
 $nombre= '';
 $telefono= '';
@@ -27,16 +37,16 @@ if (!empty($_POST)) {
 	  
 	  $id=$_POST['id_usuario'];
 	  
-	  $A=Usuario::traer_datos($id);
+$A = Usuario::traer_datos($id);
 
-	  $nombre= $A['nombre'];
-      $telefono=$A['telefono'];
-      $email= $A['email'];
-      $roles= $A['roles'];
-      $password= $A['password'];
-      $permisos= $A['Permisos'];
-      $institucion= $A['Institucion'];
-	    $rol_institucion= $A['Rol_institucion'];
+  $nombre = $A['nombre'] ?? '';
+      $telefono = $A['telefono'] ?? '';
+      $email = $A['email'] ?? '';
+      $roles = $A['roles'] ?? '';
+      $password = $A['password'] ?? '';
+      $permisos = $A['permisos'] ?? $A['Permisos'] ?? '';
+      $institucion = $A['institucion'] ?? $A['Institucion'] ?? '';
+	    $rol_institucion = $A['rol_institucion'] ?? $A['Rol_institucion'] ?? '';
       
 		
 		$accion = $_SERVER['PHP_SELF'].'?operacion=actualizar&ID_usuario='. $id;
@@ -70,16 +80,16 @@ if ($operacion == 'baja'){
 	  
   $id=$_POST['id_usuario'];
 
-  $A=Usuario::traer_datos($id);
+  $A = Usuario::traer_datos($id);
 
-      $nombre= $A['nombre'];
-      $telefono=$A['telefono'];
-      $gmail= $A['gmail'];
-      $roles= $A['roles'];
-      $password= $A['password'];
-      $permisos= $A['permisos'];
-      $institucion= $A['institucion'];
-	    $rol_institucion= $A['Rol_institucion'];
+      $nombre = $A['nombre'] ?? '';
+      $telefono = $A['telefono'] ?? '';
+      $email = $A['email'] ?? $A['gmail'] ?? '';
+      $roles = $A['roles'] ?? '';
+      $password = $A['password'] ?? '';
+      $permisos = $A['permisos'] ?? $A['Permisos'] ?? '';
+      $institucion = $A['institucion'] ?? $A['Institucion'] ?? '';
+	    $rol_institucion = $A['rol_institucion'] ?? $A['Rol_institucion'] ?? '';
 
 $accion=$_SERVER['PHP_SELF'].'?operacion=borrar&id_usuario='. $id;
 $btn_txt='Borrar';

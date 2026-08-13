@@ -1,5 +1,14 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/tecnologias.php";
+
+$_POST = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_POST ?? []);
+
+$_GET = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_GET ?? []);
 
 $datos = new Tecnologia();
 $tecnologia = new Tecnologia();
@@ -57,7 +66,11 @@ if (!empty($_POST)) {
     $tecnologia->color=$_POST['txtColor'];
     $tecnologia->bkg_color=$_POST['txtBkgColor'];
  
-    $tecnologia->actualizar($_GET['id_tecnologia']);
+    $ok = $tecnologia->actualizar($_GET['id_tecnologia']);
+    if (!$ok) {
+      header('Location: tecnologia_edit.php?operacion=edicion&id_tecnologia=' . (int) $_GET['id_tecnologia'] . '&error=duplicado');
+      exit;
+    }
   header("Location: ".$_SERVER['HTTP_REFERER']);
 }		
   
@@ -101,7 +114,11 @@ if (!empty($_GET)) {
     $tecnologia->color=$_POST['txtColor'];
     $tecnologia->bkg_color=$_POST['txtBkgColor'];
 
-  $tecnologia->guardar();
+  $ok = $tecnologia->guardar();
+  if (!$ok) {
+    header('Location: tecnologia_alta.php?error=duplicado');
+    exit;
+  }
   header("Location: ".$_SERVER['HTTP_REFERER']);
   }
   if ($operacion == 'borrar' && isset($_GET['id_tecnologia'])){

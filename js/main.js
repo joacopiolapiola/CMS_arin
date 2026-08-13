@@ -5,23 +5,74 @@
   let i_slider=-1;
   //let Max_miscs=0;
 
+  function getEl(id) {
+    return document.getElementById(id);
+  }
+
+  function safeSetHtml(id, html) {
+    const el = getEl(id);
+    if (el) {
+      el.innerHTML = html ?? '';
+    }
+  }
+
+  function safeSetText(id, text) {
+    const el = getEl(id);
+    if (el) {
+      const value = text === undefined || text === null || text === 'undefined' || text === 'null' ? '' : String(text);
+      el.textContent = value;
+    }
+  }
+
+  function safeValue(obj, keys, fallback = '') {
+    if (!obj || typeof obj !== 'object') {
+      return fallback;
+    }
+
+    for (const key of keys) {
+      const value = obj[key] ?? obj[key.toLowerCase()] ?? obj[key.toUpperCase()];
+      if (value !== undefined && value !== null && value !== 'undefined' && value !== 'null' && value !== '') {
+        return value;
+      }
+    }
+
+    return fallback;
+  }
+
+  function safeGetText(id, fallback = '0') {
+    const el = getEl(id);
+    if (!el) return fallback;
+    const value = (el.innerText ?? el.textContent ?? '').trim();
+    return value === '' ? fallback : value;
+  }
+
  
         function poner_logo(div,imagen){
-          //const myImage = new Image(100, 100);
-          //var myImage = document.createElement("img");
-          //myImage.src = "images/"+imagen;
-          //myImage.alt='';
-          //$(div).attr("src",myImage.src);
-          //document.getElementById(div).appendChild  =myImage.src;
-          const url="images/"+imagen;
           const div_l = document.getElementById(div);
-          if(imagen!=''){
-            
-            div_l.innerHTML = `<img src="${url}" alt="Imagen" style="width:80px; height:80px;">`;
+          if (!div_l) {
+            return;
           }
-          else{
-            div_l.innerHTML = ``;
+
+          const valor = (typeof imagen === 'string') ? imagen.trim() : '';
+          if (valor === '' || valor === 'undefined' || valor === 'null') {
+            div_l.innerHTML = '';
+            return;
           }
+
+          const url = /^(https?:)?\/\//i.test(valor) ? valor : 'images/' + valor;
+          const img = new Image();
+          img.alt = 'Logo';
+          img.style.width = '80px';
+          img.style.height = '80px';
+          img.style.objectFit = 'contain';
+          img.onload = function () {
+            div_l.innerHTML = '';
+            div_l.appendChild(img);
+          };
+          img.onerror = function () {
+            div_l.innerHTML = '';
+          };
+          img.src = url;
         }
 
 
@@ -63,45 +114,79 @@
      
         function poner_cat(div)
         {
-        let ix=div.slice(1);
-        
-        let nombre=document.getElementById(div).innerHTML;
-        document.getElementById("hdr_cat").innerHTML='<H4>'+categorias[ix-1].nombre+'</H4>';
-        document.getElementById("abreviatura").innerHTML='<H4>'+categorias[ix-1].abreviatura+'</H4>';
-        document.getElementById("resumen").innerHTML='<H5>'+categorias[ix-1].resumen+'</H5>';
-        document.getElementById("id_cat").innerHTML=categorias[ix-1].ID_tecnologia;
-        document.getElementById("orden").innerHTML=categorias[ix-1].orden;
-        poner_colores("#hdr_cat",categorias[ix-1].color,categorias[ix-1].bkg_color);
-        poner_colores("#abreviatura",categorias[ix-1].color,categorias[ix-1].bkg_color);
-        poner_colores("#resumen",categorias[ix-1].color,categorias[ix-1].bkg_color);
-        //document.getElementById("Hdr_Contenido").innerHTML='<H4>'+categorias[ix-1].nombre+'</H4>';
-        document.getElementById("Contenido").innerHTML='<H4>'+categorias[ix-1].nombre+'</H4>'+'<H5>'+categorias[ix-1].definicion+'</H5>';
-        poner_logo("logo",categorias[ix-1].logo);
+        if (!div) return;
+        const item = getEl(div);
+        if (!item) return;
+        let ix = Number(String(div).replace(/^M/, ''));
+        if (!Number.isFinite(ix) || ix < 1 || !categorias[ix - 1]) return;
+
+        const categoria = categorias[ix - 1] || {};
+        const nombre = safeValue(categoria, ['nombre'], '');
+        const abreviatura = safeValue(categoria, ['abreviatura'], '');
+        const resumen = safeValue(categoria, ['resumen'], '');
+        const definicion = safeValue(categoria, ['definicion'], '');
+        const color = safeValue(categoria, ['color'], '');
+        const bkgColor = safeValue(categoria, ['bkg_color'], '');
+        const logo = safeValue(categoria, ['logo'], '');
+        const idTecnologia = safeValue(categoria, ['id_tecnologia', 'ID_tecnologia', 'id'], 0);
+
+        safeSetHtml("hdr_cat", '<H4>' + nombre + '</H4>');
+        safeSetHtml("abreviatura", '<H4>' + abreviatura + '</H4>');
+        safeSetHtml("resumen", '<H5>' + resumen + '</H5>');
+        safeSetText("id_cat", idTecnologia || 0);
+        safeSetText("orden", safeValue(categoria, ['orden'], 0));
+        poner_colores("#hdr_cat", color, bkgColor);
+        poner_colores("#abreviatura", color, bkgColor);
+        poner_colores("#resumen", color, bkgColor);
+        safeSetHtml("Contenido", '<H4>' + nombre + '</H4>' + '<H5>' + definicion + '</H5>');
+        poner_logo("logo", logo);
         poner_secciones();
         } 
      
         function poner_p40()
         {
-          document.body.style.fontFamily = raiz['fuente'];
-          document.body.style.Color=raiz['color_gral'];
-          document.body.style.backgroundColor=raiz['bkg_color_gral'];
-          document.getElementById("usuario").backgroundColor=raiz['bkg_color_gral'];
- 
-          document.getElementById("hdr_cat").innerHTML='<H3>'+raiz['nombre']+'</H3>';
-           document.getElementById("hdr_sitio").innerHTML='<H2>'+raiz['nombre_sitio']+'</H2>';
-           document.getElementById("hdr_institucion").innerHTML='<H5>'+raiz['nombre_institucion']+'</H5>';
-           document.getElementById("abreviatura").innerHTML='<H4>'+raiz['abreviatura']+'</H4>';
-           document.getElementById("resumen").innerHTML='<H5>'+raiz['resumen']+'</H5>';
-           document.getElementById("id_cat").innerHTML=0;
-           poner_colores("#hdr_cat",raiz['color'],raiz['bkg_color']);
-           poner_colores("#abreviatura",raiz['color'],raiz['bkg_color']);
-           poner_colores("#resumen",raiz['color'],raiz['bkg_color']);
-           document.getElementById("Contenido").innerHTML='<H4>'+raiz['nombre']+'</H4>'+'<H5>'+raiz['definicion']+'</H5>';
-           poner_logo("logo",raiz['logo']);
-           poner_secciones();
-           i_slider=-1;
-           cargar('#Contenido','fondo.php');
-           //poner_miscelaneas();
+          const raizData = Array.isArray(raiz) ? (raiz[0] || {}) : (raiz || {});
+          const nombreRaiz = safeValue(raizData, ['nombre'], 'Plataforma');
+          const nombreSitio = safeValue(raizData, ['nombre_sitio'], 'Plataforma 4.0');
+          const nombreInstitucion = safeValue(raizData, ['nombre_institucion'], '');
+          const abreviatura = safeValue(raizData, ['abreviatura'], '');
+          const resumen = safeValue(raizData, ['resumen'], '');
+          const definicion = safeValue(raizData, ['definicion'], '');
+          const logo = safeValue(raizData, ['logo'], '');
+          const fuente = safeValue(raizData, ['fuente'], '');
+          const colorGral = safeValue(raizData, ['color_gral'], '');
+          const bkgGral = safeValue(raizData, ['bkg_color_gral'], '');
+          const color = safeValue(raizData, ['color'], '');
+          const bkgColor = safeValue(raizData, ['bkg_color'], '');
+
+          document.body.style.fontFamily = fuente;
+          document.body.style.color = colorGral;
+          document.body.style.backgroundColor = bkgGral;
+          const usuarioEl = getEl("usuario");
+          if (usuarioEl) {
+            usuarioEl.style.backgroundColor = bkgGral;
+          }
+
+          safeSetHtml("hdr_cat", '<H3>' + nombreRaiz + '</H3>');
+          const hdrSitio = getEl("hdr_sitio");
+          if (hdrSitio) hdrSitio.innerHTML = '<H2>' + nombreSitio + '</H2>';
+          const hdrInstitucion = getEl("hdr_institucion");
+          if (hdrInstitucion) hdrInstitucion.innerHTML = '<H5>' + nombreInstitucion + '</H5>';
+          safeSetHtml("abreviatura", '<H4>' + abreviatura + '</H4>');
+          safeSetHtml("resumen", '<H5>' + resumen + '</H5>');
+          safeSetText("id_cat", 0);
+          poner_colores("#hdr_cat", color, bkgColor);
+          poner_colores("#abreviatura", color, bkgColor);
+          poner_colores("#resumen", color, bkgColor);
+          safeSetHtml("Contenido", '<H4>' + nombreRaiz + '</H4>' + '<H5>' + definicion + '</H5>');
+          poner_logo("logo", logo);
+          poner_secciones();
+          i_slider=-1;
+          const contenidoEl = getEl('Contenido');
+          if (contenidoEl) {
+            cargar('#Contenido','fondo.php');
+          }
+          //poner_miscelaneas();
       
         } 
         /*
@@ -156,23 +241,31 @@
 
         function poner_secciones()
         {
+         const catEl = getEl("id_cat");
+         const ordenEl = getEl("orden");
+         if (!catEl || !ordenEl) {
+           return;
+         }
+
          let enlace; 
          let id;
-         let tecno='1';
-         let pos='1';
+         let tecno = (catEl.innerText ?? catEl.textContent ?? '').trim() || '1';
+         let pos = (ordenEl.innerText ?? ordenEl.textContent ?? '').trim() || '1';
          let id_s;
          let n=0;
          let idx;
          
-         tecno=document.getElementById("id_cat").innerText;
-         pos=document.getElementById("orden").innerText;
-          
          for(i=0;i<secciones.length;i++){ 
          idx="S"+(i+1);
-         document.getElementById(idx).style.visibility='hidden';
+         const el = getEl(idx);
+         if (el) {
+           el.style.visibility='hidden';
+         }
           if(secciones[i].id_tecnologia==tecno){
 
             id="S"+(n+1);
+            const elId = getEl(id);
+            if (!elId) continue;
            if(secciones[i].enlace!="comodin.php")
              enlace='<div onclick="cargar(\'#Contenido\',\''+secciones[i].enlace +'?str_b='+tecno+'\');">'+secciones[i].nombre+'</div>';
            if(secciones[i].enlace=="comodin.php")
@@ -183,15 +276,19 @@
             //if(tecno!='0')
             //    document.getElementById(id).innerHTML=enlace;
             //else
-                document.getElementById(id).innerHTML=enlace;
+                elId.innerHTML=enlace;
                 //document.getElementById(id).innerHTML=secciones[i].nombre;
 
             id_s="#"+id;
-            document.getElementById(id).style.visibility='visible';    
-            if(tecno!='0')
-              poner_colores(id_s,categorias[pos-1].color,categorias[pos-1].bkg_color);
-            else
-              poner_colores(id_s,raiz['color'],raiz['bkg_color']);
+            elId.style.visibility='visible';    
+            if(tecno!='0') {
+              const categoria = categorias[Number(pos)-1] || null;
+              if (categoria) {
+                poner_colores(id_s, categoria.color, categoria.bkg_color);
+              }
+            } else {
+              poner_colores(id_s,raiz && raiz['color'] ? raiz['color'] : '',raiz && raiz['bkg_color'] ? raiz['bkg_color'] : '');
+            }
             n++;
             }
          
@@ -213,32 +310,32 @@
           
         {
           
-            document.getElementById('usuario').innerHTML=nombre;
-            document.getElementById('rol_user').innerHTML=rol;
-            document.getElementById('entrar').innerHTML='<a href="#" onclick="cargar(\'#Contenido\',\'logout.html\')">Salir</a>';
+            safeSetText('usuario', nombre || '');
+            safeSetText('rol_user', rol || '');
+            safeSetHtml('entrar', '<a href="#" onclick="cargar(\'#Contenido\',\'logout.html\')">Salir</a>');
            
         }
     
      function poner_opcion_logout()
      {
-      document.getElementById('entrar').innerHTML='<a href="#" onclick="cargar("#Contenido","logout.html")">Salir</a>';
+      safeSetHtml('entrar', '<a href="#" onclick="cargar(\'#Contenido\',\'logout.html\')">Salir</a>');
      }
 
      function poner_opcion_login()
      {
-      document.getElementById('entrar').innerHTML='<a href="#" onclick="cargar(\'#Contenido\',\'login.html\')">Ingreso</a>';
-      document.getElementById('rol_user').innerHTML='';
-      document.getElementById('usuario').innerHTML='';
+      safeSetHtml('entrar', '<a href="#" onclick="cargar(\'#Contenido\',\'login.html\')">Ingreso</a>');
+      safeSetText('rol_user', '');
+      safeSetText('usuario', '');
     }
 
      function poner_opcion_cms()
      {
-      document.getElementById('cms_in').innerHTML='<a href="./cms/cms_p40.php" target="_blank">Cms</a>';
+      safeSetHtml('cms_in', '<a href="./cms/cms_p40.php" target="_blank">Cms</a>');
      }
 
      function sacar_opcion_cms()
      {
-      document.getElementById('cms_in').innerHTML='';
+      safeSetHtml('cms_in', '');
      }
 
 

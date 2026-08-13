@@ -1,6 +1,15 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/historia.php";
 include_once "../clases/tecnologias.php";
+
+$_POST = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_POST ?? []);
+
+$_GET = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_GET ?? []);
 
 
 

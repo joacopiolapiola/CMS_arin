@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/secciones.php";
 
 $datos = new Seccion();

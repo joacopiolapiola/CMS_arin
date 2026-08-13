@@ -96,25 +96,71 @@ CREATE TABLE `cursos` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `encuentas`
+-- Estructura de tabla para la tabla `encuestas`
 --
 
-CREATE TABLE `encuentas` (
-  `ID_encuestas` int(11) NOT NULL,
-  `contenido` text NOT NULL,
-  `ID_tecnologia` int(50) NOT NULL
+CREATE TABLE `encuestas` (
+  `id_encuesta` int(11) NOT NULL,
+  `pregunta` text NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `id_tecnologia` int(11) NOT NULL DEFAULT 0,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
+  `creado_en` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `encuesta_opciones` (
+  `id_opcion` int(11) NOT NULL,
+  `id_encuesta` int(11) NOT NULL,
+  `texto` varchar(255) NOT NULL,
+  `orden_item` int(11) NOT NULL DEFAULT 0,
+  `activo` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `encuesta_respuestas` (
+  `id_respuesta` int(11) NOT NULL,
+  `id_encuesta` int(11) NOT NULL,
+  `id_opcion` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `creado_en` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `foro`
+-- Estructura de tabla para la tabla `chat_mensajes`
 --
 
-CREATE TABLE `foro` (
-  `ID_foro` int(11) NOT NULL,
-  `Contenido` text NOT NULL,
-  `ID_tecnologia` int(50) NOT NULL
+CREATE TABLE `chat_mensajes` (
+  `id` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `id_respuesta_a` int(11) DEFAULT NULL,
+  `mensaje` text NOT NULL,
+  `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
+  `activo` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `foro_temas`
+--
+
+CREATE TABLE `foro_temas` (
+  `id_tema` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `titulo` varchar(150) NOT NULL,
+  `contenido` text NOT NULL,
+  `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
+  `activo` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `foro_respuestas` (
+  `id_respuesta` int(11) NOT NULL,
+  `id_tema` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `contenido` text NOT NULL,
+  `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
+  `activo` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -382,16 +428,43 @@ ALTER TABLE `cursos`
   ADD PRIMARY KEY (`ID_cursos`);
 
 --
--- Indices de la tabla `encuentas`
+-- Indices de la tabla `encuestas`
 --
-ALTER TABLE `encuentas`
-  ADD PRIMARY KEY (`ID_encuestas`);
+ALTER TABLE `encuestas`
+  ADD PRIMARY KEY (`id_encuesta`);
+
+ALTER TABLE `encuesta_opciones`
+  ADD PRIMARY KEY (`id_opcion`),
+  ADD KEY `idx_opciones_encuesta` (`id_encuesta`);
+
+ALTER TABLE `encuesta_respuestas`
+  ADD PRIMARY KEY (`id_respuesta`),
+  ADD UNIQUE KEY `uq_encuesta_usuario` (`id_encuesta`, `id_usuario`),
+  ADD KEY `idx_respuestas_encuesta` (`id_encuesta`),
+  ADD KEY `idx_respuestas_usuario` (`id_usuario`);
 
 --
--- Indices de la tabla `foro`
+-- Indices de la tabla `chat_mensajes`
 --
-ALTER TABLE `foro`
-  ADD PRIMARY KEY (`ID_foro`);
+ALTER TABLE `chat_mensajes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_chat_usuario` (`id_usuario`),
+  ADD KEY `idx_chat_respuesta` (`id_respuesta_a`);
+
+--
+-- Indices de la tabla `foro_temas`
+--
+ALTER TABLE `foro_temas`
+  ADD PRIMARY KEY (`id_tema`),
+  ADD KEY `idx_foro_tema_usuario` (`id_usuario`);
+
+--
+-- Indices de la tabla `foro_respuestas`
+--
+ALTER TABLE `foro_respuestas`
+  ADD PRIMARY KEY (`id_respuesta`),
+  ADD KEY `idx_foro_respuesta_tema` (`id_tema`),
+  ADD KEY `idx_foro_respuesta_usuario` (`id_usuario`);
 
 --
 -- Indices de la tabla `historia`
@@ -470,16 +543,40 @@ ALTER TABLE `cursos`
   MODIFY `ID_cursos` int(10) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `encuentas`
+-- AUTO_INCREMENT de la tabla `encuestas`
 --
-ALTER TABLE `encuentas`
-  MODIFY `ID_encuestas` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `encuestas`
+  MODIFY `id_encuesta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `foro`
+-- AUTO_INCREMENT de la tabla `encuesta_opciones`
 --
-ALTER TABLE `foro`
-  MODIFY `ID_foro` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `encuesta_opciones`
+  MODIFY `id_opcion` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `encuesta_respuestas`
+--
+ALTER TABLE `encuesta_respuestas`
+  MODIFY `id_respuesta` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `chat_mensajes`
+--
+ALTER TABLE `chat_mensajes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `foro_temas`
+--
+ALTER TABLE `foro_temas`
+  MODIFY `id_tema` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `foro_respuestas`
+--
+ALTER TABLE `foro_respuestas`
+  MODIFY `id_respuesta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historia`

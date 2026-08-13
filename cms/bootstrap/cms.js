@@ -12,10 +12,29 @@
   let Max_miscs=0;
   let tecnos = [         ];
 
+  function getEl(id) {
+    return document.getElementById(id);
+  }
+
+  function safeSetHtml(id, html) {
+    const el = getEl(id);
+    if (el) {
+      el.innerHTML = html ?? '';
+    }
+  }
+
+  function safeSetText(id, text) {
+    const el = getEl(id);
+    if (el) {
+      el.textContent = text ?? '';
+    }
+  }
+
  
  
          function poner_colores(div,color,bkg_color)
          {
+           if (!div) return;
            $(div).css('color', color);
            $(div).css('background-color',bkg_color);
          }
@@ -56,7 +75,7 @@
         let ix=div.slice(-1);
        
         //$(div).text(nombre);
-        enlace='<a href="#" onclick="preparar(\'#hdr_menu\',\''+categorias[ix-1].link +'\',\'#id_hdr\',\''+categorias[ix-1].nombre+'\');">'+categorias[ix-1].nombre+'</a>';
+        enlace='<a href="#" class="menu-link" data-link="'+categorias[ix-1].link+'" data-title="'+categorias[ix-1].nombre+'">'+categorias[ix-1].nombre+'</a>';
         ix=div.slice(1);
         //alert(ix+": "+enlace);
         
@@ -87,39 +106,52 @@
 
         function poner_secciones()
         {
+         const catEl = getEl("id_cat");
+         if (!catEl) return;
          let enlace; 
          let id;
-         let tecno='1';
+         let tecno = (catEl.innerText ?? catEl.textContent ?? '').trim() || '1';
          let pos='1';
          let id_s;
          let n=0;
          let idx;
-         
-         tecno=document.getElementById("id_cat").innerText;
-         pos=document.getElementById("orden").innerText;
+         const ordenEl = getEl("orden");
+         if (ordenEl) {
+           pos = (ordenEl.innerText ?? ordenEl.textContent ?? '').trim() || '1';
+         }
           
          for(i=0;i<secciones.length;i++){ 
          idx="S"+(i+1);
-         document.getElementById(idx).style.visibility='hidden';
+         const hiddenEl = getEl(idx);
+         if (hiddenEl) {
+           hiddenEl.style.visibility='hidden';
+         }
           if(secciones[i].id_tecnologia==tecno){
 
             id="S"+(n+1);
+            const itemEl = getEl(id);
+            if (!itemEl) continue;
            
-            enlace='<div onclick="cargar(\'#Contenido\',\''+secciones[i].enlace +'?str_b='+tecno+'\');">'+secciones[i].nombre+'</div>';
+            enlace='<div class="seccion-link" data-link="'+secciones[i].enlace+'?str_b='+tecno+'">'+secciones[i].nombre+'</div>';
            
             //$(id).text(secciones[i].nombre);
             //document.getElementById(id).innerHTML=secciones[i].nombre;
             if(tecno!='0')
-                document.getElementById(id).innerHTML=enlace;
+                itemEl.innerHTML=enlace;
             else
-                document.getElementById(id).innerHTML=secciones[i].nombre;
+                itemEl.innerHTML=secciones[i].nombre;
 
                 id_s="#"+id;
-            document.getElementById(id).style.visibility='visible';    
-            if(tecno!='0')
-              poner_colores(id_s,categorias[pos-1].color,categorias[pos-1].bkg_color);
-            else
-              poner_colores(id_s,raiz[0].color,raiz[0].bkg_color);
+            itemEl.style.visibility='visible';    
+            if(tecno!='0') {
+              const categoria = categorias[Number(pos)-1] || null;
+              if (categoria) {
+                poner_colores(id_s,categoria.color,categoria.bkg_color);
+              }
+            } else {
+              const base = raiz && raiz[0] ? raiz[0] : {};
+              poner_colores(id_s,base.color || '',base.bkg_color || '');
+            }
             n++;
             }
          
@@ -130,7 +162,9 @@
      
          function toggleVis(div,visi) {
              const elemento = document.getElementById(div);
-             elemento.style.visibility = visi;
+             if (elemento) {
+               elemento.style.visibility = visi;
+             }
              //if (elemento.style.visibility === 'hidden') {
              //    elemento.style.visibility = 'visible';
              //} else {
@@ -146,9 +180,10 @@
                        
            for(i=0;i<secciones.length;i++){ 
            idx="S"+(i+1);
-           
-           enlace='<div onclick="cargar_cms(\'#hdr_menu\',\''+secciones[i].enlace_cms +'\',\'#id_hdr\',\''+secciones[i].nombre+'\');">'+secciones[i].nombre+'</div>';
-           document.getElementById(idx).innerHTML=enlace;
+           const itemEl = getEl(idx);
+           if (!itemEl) continue;
+           enlace='<div class="submenu-link" data-link="'+secciones[i].enlace_cms+'" data-title="'+secciones[i].nombre+'">'+secciones[i].nombre+'</div>';
+           itemEl.innerHTML=enlace;
   
                          
               }
@@ -202,14 +237,14 @@
 
 function poner_tecnos()
           {
+           const hdr = getEl('hdr_tecs');
+           if (!hdr) return;
            let enlace=''; 
                        
            for(i=0;i<tecnos.length;i++)
               enlace=enlace+tecnos[i].ID_tecnologia +'-'+tecnos[i].nombre+' | ';
 
-           document.getElementById('hdr_tecs').innerHTML=enlace;
-  
-          
+           hdr.innerHTML=enlace;
           } 
 
 
@@ -302,7 +337,7 @@ function poner_tecnos()
                 document.getElementById('DataError').textContent += 'El número de teléfono es obligatorio.';
                 hasErrors = true;
             } else if (!/^[0-9]{10}$/.test(phone)) {
-                document.getElementById('DataErrorr').textContent += 'El número de teléfono debe tener 10 dígitos.';
+                document.getElementById('DataError').textContent += 'El número de teléfono debe tener 10 dígitos.';
                 hasErrors = true;
             } else {
                 //document.getElementById('DataError').textContent = '';
@@ -326,9 +361,33 @@ function poner_tecnos()
 
             // Si no hay errores, enviar el formulario
             if (!hasErrors) {
-                alert('Formulario enviado exitosamente.');
-                // Aquí es donde normalmente se enviaría el formulario a un servidor
-                // Ejemplo: this.submit();
+                this.submit();
             }
         });
       }
+
+// Delegated click handlers for menu, seccion and submenu links
+(function(){
+  document.addEventListener('click', function(e){
+    const actionable = e.target && e.target.closest ? e.target.closest('.menu-link, .seccion-link, .submenu-link') : null;
+    if (!actionable) return;
+    e.preventDefault();
+    if (actionable.classList.contains('menu-link')) {
+      const link = actionable.getAttribute('data-link');
+      const title = actionable.getAttribute('data-title');
+      preparar('#hdr_menu', link, '#id_hdr', title);
+      return;
+    }
+    if (actionable.classList.contains('seccion-link')) {
+      const link = actionable.getAttribute('data-link');
+      cargar('#Contenido', link);
+      return;
+    }
+    if (actionable.classList.contains('submenu-link')) {
+      const link = actionable.getAttribute('data-link');
+      const title = actionable.getAttribute('data-title');
+      cargar_cms('#hdr_menu', link, '#id_hdr', title);
+      return;
+    }
+  });
+})();

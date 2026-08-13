@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/tecnologias.php";
 
 $datos = new Tecnologia();
@@ -20,8 +21,10 @@ $bkg_color= '';
 
  
 <div class="container">
+  <?php if (isset($_GET['error']) && $_GET['error'] === 'duplicado'): ?>
+    <div class="alert alert-danger">Ya existe un tópico con ese nombre. Debe elegir otro nombre.</div>
+  <?php endif; ?>
   
-   
   <form  role="form" method="POST" action="tecnologia_edit.php?operacion=agregar">
    <legend>Alta Topico</legend>
       

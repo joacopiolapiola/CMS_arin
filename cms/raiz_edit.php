@@ -1,5 +1,14 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/raiz.php";
+
+$_POST = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_POST ?? []);
+
+$_GET = array_map(static function ($value) {
+    return is_string($value) ? trim(strip_tags($value)) : $value;
+}, $_GET ?? []);
 
 $datos = new Raiz();
 $raiz = new Raiz();

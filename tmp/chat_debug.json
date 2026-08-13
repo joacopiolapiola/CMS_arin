@@ -1,0 +1,281 @@
+{
+    "mensajes": [
+        {
+            "id": 13,
+            "id_usuario": 19,
+            "id_respuesta_a": null,
+            "mensaje": "hola",
+            "creado_en": "2026-08-13 17:41:46",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": null
+        },
+        {
+            "id": 5,
+            "id_usuario": 19,
+            "id_respuesta_a": null,
+            "mensaje": "hola",
+            "creado_en": "2026-08-13 17:31:41",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": null
+        },
+        {
+            "id": 1,
+            "id_usuario": 19,
+            "id_respuesta_a": null,
+            "mensaje": "1",
+            "creado_en": "2026-08-13 17:29:23",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": null
+        },
+        {
+            "id": 12,
+            "id_usuario": 19,
+            "id_respuesta_a": 1,
+            "mensaje": "hola",
+            "creado_en": "2026-08-13 17:40:22",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "1"
+        },
+        {
+            "id": 11,
+            "id_usuario": 19,
+            "id_respuesta_a": 5,
+            "mensaje": "hoalaa",
+            "creado_en": "2026-08-13 17:38:58",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "hola"
+        },
+        {
+            "id": 10,
+            "id_usuario": 19,
+            "id_respuesta_a": 5,
+            "mensaje": "21",
+            "creado_en": "2026-08-13 17:38:54",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "hola"
+        },
+        {
+            "id": 9,
+            "id_usuario": 19,
+            "id_respuesta_a": 5,
+            "mensaje": "holaaaa",
+            "creado_en": "2026-08-13 17:37:09",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "hola"
+        },
+        {
+            "id": 8,
+            "id_usuario": 19,
+            "id_respuesta_a": 5,
+            "mensaje": "21",
+            "creado_en": "2026-08-13 17:37:04",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "hola"
+        },
+        {
+            "id": 7,
+            "id_usuario": 19,
+            "id_respuesta_a": 5,
+            "mensaje": "1",
+            "creado_en": "2026-08-13 17:34:39",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "hola"
+        },
+        {
+            "id": 6,
+            "id_usuario": 19,
+            "id_respuesta_a": 5,
+            "mensaje": "1",
+            "creado_en": "2026-08-13 17:33:59",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "hola"
+        },
+        {
+            "id": 4,
+            "id_usuario": 19,
+            "id_respuesta_a": 1,
+            "mensaje": "hola",
+            "creado_en": "2026-08-13 17:31:37",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "1"
+        },
+        {
+            "id": 3,
+            "id_usuario": 19,
+            "id_respuesta_a": 1,
+            "mensaje": "holaaaa",
+            "creado_en": "2026-08-13 17:29:43",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "1"
+        },
+        {
+            "id": 2,
+            "id_usuario": 19,
+            "id_respuesta_a": 1,
+            "mensaje": "holaaa",
+            "creado_en": "2026-08-13 17:29:30",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": "1"
+        }
+    ],
+    "hilos": [
+        {
+            "id": 13,
+            "id_usuario": 19,
+            "id_respuesta_a": null,
+            "mensaje": "hola",
+            "creado_en": "2026-08-13 17:41:46",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": null,
+            "respuestas": []
+        },
+        {
+            "id": 5,
+            "id_usuario": 19,
+            "id_respuesta_a": null,
+            "mensaje": "hola",
+            "creado_en": "2026-08-13 17:31:41",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": null,
+            "respuestas": [
+                {
+                    "id": 11,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 5,
+                    "mensaje": "hoalaa",
+                    "creado_en": "2026-08-13 17:38:58",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "hola",
+                    "respuestas": []
+                },
+                {
+                    "id": 10,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 5,
+                    "mensaje": "21",
+                    "creado_en": "2026-08-13 17:38:54",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "hola",
+                    "respuestas": []
+                },
+                {
+                    "id": 9,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 5,
+                    "mensaje": "holaaaa",
+                    "creado_en": "2026-08-13 17:37:09",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "hola",
+                    "respuestas": []
+                },
+                {
+                    "id": 8,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 5,
+                    "mensaje": "21",
+                    "creado_en": "2026-08-13 17:37:04",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "hola",
+                    "respuestas": []
+                },
+                {
+                    "id": 7,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 5,
+                    "mensaje": "1",
+                    "creado_en": "2026-08-13 17:34:39",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "hola",
+                    "respuestas": []
+                },
+                {
+                    "id": 6,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 5,
+                    "mensaje": "1",
+                    "creado_en": "2026-08-13 17:33:59",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "hola",
+                    "respuestas": []
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "id_usuario": 19,
+            "id_respuesta_a": null,
+            "mensaje": "1",
+            "creado_en": "2026-08-13 17:29:23",
+            "nombre_usuario": "Papp Lucas Ariel",
+            "email_usuario": "lucasklash521@gmail.com",
+            "mensaje_padre": null,
+            "respuestas": [
+                {
+                    "id": 12,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 1,
+                    "mensaje": "hola",
+                    "creado_en": "2026-08-13 17:40:22",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "1",
+                    "respuestas": []
+                },
+                {
+                    "id": 4,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 1,
+                    "mensaje": "hola",
+                    "creado_en": "2026-08-13 17:31:37",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "1",
+                    "respuestas": []
+                },
+                {
+                    "id": 3,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 1,
+                    "mensaje": "holaaaa",
+                    "creado_en": "2026-08-13 17:29:43",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "1",
+                    "respuestas": []
+                },
+                {
+                    "id": 2,
+                    "id_usuario": 19,
+                    "id_respuesta_a": 1,
+                    "mensaje": "holaaa",
+                    "creado_en": "2026-08-13 17:29:30",
+                    "nombre_usuario": "Papp Lucas Ariel",
+                    "email_usuario": "lucasklash521@gmail.com",
+                    "mensaje_padre": "1",
+                    "respuestas": []
+                }
+            ]
+        }
+    ]
+}

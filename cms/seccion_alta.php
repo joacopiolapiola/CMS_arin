@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/secciones.php";
 
 
@@ -20,8 +21,10 @@ $enlace_cms= '';
 
  
 <div class="container">
+  <?php if (isset($_GET['error']) && $_GET['error'] === 'duplicado'): ?>
+    <div class="alert alert-danger">Ya existe una sección con ese nombre. Debe elegir otro nombre.</div>
+  <?php endif; ?>
   
-   
   <form  role="form" method="POST" action="seccion_edit.php?operacion=agregar">
    <legend>Alta Seccion</legend>
       

@@ -43,8 +43,12 @@ $hayEncuestas = !empty($encuestas);
   <script>
     (function () {
       const key = 'site_theme';
-      const savedTheme = localStorage.getItem(key);
-      const shouldDark = savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let savedTheme = null;
+      try { savedTheme = window.localStorage.getItem(key); } catch (error) {}
+      const mediaQuery = typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-color-scheme: dark)')
+        : null;
+      const shouldDark = savedTheme ? savedTheme === 'dark' : Boolean(mediaQuery && mediaQuery.matches);
       document.body.setAttribute('data-theme', shouldDark ? 'dark' : 'light');
     })();
   </script>

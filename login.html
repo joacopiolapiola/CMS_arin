@@ -91,6 +91,10 @@
                       sacar_opcion_cms();
                     }
 
+                    if (typeof sincronizarSesion === 'function') {
+                      sincronizarSesion();
+                    }
+
                 } else {
                     alert('EEError: ' + data.message);
                 }

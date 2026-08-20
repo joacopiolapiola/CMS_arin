@@ -2,6 +2,42 @@
 
 class PermisosSistema
 {
+    public static function rolesDisponibles(): array
+    {
+        return [
+            'visitante' => 'Visitante',
+            'usuario' => 'Usuario',
+            'editor' => 'Editor',
+            'administrador' => 'Administrador',
+        ];
+    }
+
+    public static function normalizarRol($rol): ?string
+    {
+        $rol = strtolower(trim((string) $rol));
+        $alias = [
+            'invitado' => 'visitante',
+            'admin' => 'administrador',
+            'superadmin' => 'administrador',
+        ];
+        $rol = $alias[$rol] ?? $rol;
+
+        return array_key_exists($rol, self::rolesDisponibles()) ? $rol : null;
+    }
+
+    public static function normalizarRoles($valor): array
+    {
+        $roles = [];
+        foreach (self::normalizarLista($valor) as $rol) {
+            $rolValido = self::normalizarRol($rol);
+            if ($rolValido !== null) {
+                $roles[] = $rolValido;
+            }
+        }
+
+        return array_values(array_unique($roles));
+    }
+
     public static function normalizarLista($valor): array
     {
         if (is_array($valor)) {
@@ -48,6 +84,7 @@ class PermisosSistema
                 'cms:quees:read',
                 'cms:comodin:read',
                 'cms:raiz:read',
+                'cms:encuestas:read',
             ],
             'administrador' => [
                 'front:view',
@@ -73,6 +110,8 @@ class PermisosSistema
                 'cms:comodin:write',
                 'cms:raiz:read',
                 'cms:raiz:write',
+                'cms:encuestas:read',
+                'cms:encuestas:write',
             ],
             'admin' => [
                 'front:view',
@@ -98,6 +137,8 @@ class PermisosSistema
                 'cms:comodin:write',
                 'cms:raiz:read',
                 'cms:raiz:write',
+                'cms:encuestas:read',
+                'cms:encuestas:write',
             ],
             'superadmin' => [
                 'front:view',
@@ -123,6 +164,8 @@ class PermisosSistema
                 'cms:comodin:write',
                 'cms:raiz:read',
                 'cms:raiz:write',
+                'cms:encuestas:read',
+                'cms:encuestas:write',
             ],
         ];
 
@@ -132,7 +175,7 @@ class PermisosSistema
     public static function rolesUsuario(): array
     {
         $roles = $_SESSION['user']['roles'] ?? $_SESSION['roles'] ?? [];
-        return self::normalizarLista($roles);
+        return self::normalizarRoles($roles);
     }
 
     public static function permisosUsuario(): array
@@ -210,7 +253,7 @@ class PermisosSistema
 
     public static function cargarDesdeUsuario(array $usuario): array
     {
-        $roles = self::normalizarLista($usuario['roles'] ?? $usuario['rol'] ?? []);
+        $roles = self::normalizarRoles($usuario['roles'] ?? $usuario['rol'] ?? []);
         $permisos = self::normalizarLista($usuario['permisos'] ?? $usuario['Permisos'] ?? []);
 
         foreach ($roles as $rol) {

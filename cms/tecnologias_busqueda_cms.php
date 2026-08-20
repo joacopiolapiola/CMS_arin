@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 include_once "../clases/tecnologias.php";
 
 $str_b =  $_POST['b'];
@@ -50,8 +51,12 @@ if (isset($tecs)){
            <td>$sec[color]</td>
            <td>$sec[bkg_color]</td>";
 	  
+      if (cms_puede_modificar()) {
 	    echo '<td><button class="btn btn-primary btn-xs" onclick="editar(' . $sec['ID_tecnologia'] . ')" >Editar</button></td>';
 		echo '<td><button class="btn btn-primary btn-xs" onclick="borrar(' . $sec['ID_tecnologia'] . ')" >Borrar</button></td>';
+      } else {
+        echo '<td colspan="2"><button class="btn btn-outline-secondary btn-xs" onclick="cargar(\'#Contenido\', \'ver_registro.php?tipo=tecnologia&id=' . $sec['ID_tecnologia'] . '\')">Ver</button></td>';
+      }
          
 		  echo " </tr> ";
 		   }

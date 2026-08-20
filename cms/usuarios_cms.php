@@ -12,7 +12,7 @@ $datos = new Usuario();
 	  <div class="col-5" >
 <?php 
 		//if (isset($_SESSION['username']) && $_SESSION['rol']=='administrador'){
-		 echo '<button type="button" class="btn btn-primary"   onclick="cargar(\'#Contenido\',\'usuario_alta.php\')">Alta</button>';
+		 if (cms_puede_modificar()) echo '<button type="button" class="btn btn-primary" onclick="cargar(\'#Contenido\',\'usuario_alta.php\')">Alta</button>';
 	    //}
 ?>
       </div>
@@ -32,7 +32,7 @@ $datos = new Usuario();
 	 
   
 
- <script src="bootstrap/usuario_f.js"></script>
+ <script src="bootstrap/usuario_f.js?v=<?php echo (int) filemtime(__DIR__ . '/bootstrap/usuario_f.js'); ?>"></script>
  
 </body>
 

@@ -5,6 +5,7 @@ $(document).ready(function(){
     console.log(document.getElementById('btn_b_tecnologia'));
     console.log(document.getElementById('txt_b_tecnologia'));
     $("#txt_b_tecnologia").focus();
+    window.setTimeout(function () { $("#btn_b_tecnologia").trigger("click"); }, 0);
 
       
       $("#btn_b_tecnologia").click(function(e){

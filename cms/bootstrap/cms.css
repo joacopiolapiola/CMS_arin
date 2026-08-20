@@ -28,6 +28,13 @@
       --cms-border: rgba(255,255,255,0.12);
       --cms-button-bg: #111827;
       --cms-button-text: #e5e7eb;
+      --bs-body-bg: #111827;
+      --bs-body-color: #f3f4f6;
+      --bs-tertiary-bg: #1f2937;
+      --bs-secondary-bg: #1f2937;
+      --bs-border-color: rgba(255,255,255,0.18);
+      --bs-emphasis-color: #f3f4f6;
+      --bs-secondary-color: #d1d5db;
     }
 
     body {
@@ -35,7 +42,10 @@
       color: var(--cms-text);
       font-family: "Lucida Console";
       transition: background-color 0.25s ease, color 0.25s ease;
+      color-scheme: light;
     }
+
+    body[data-theme="dark"] { color-scheme: dark; }
 
     .i_menu {
       height:40px;
@@ -117,13 +127,14 @@
 
 #hdr_tecs{background-color: var(--cms-header);
   color: var(--cms-header-text);
-  height:5px;
-  width:100% ;
+  min-height: 2.25rem;
+  width:100%;
   text-align: left;
-  padding-top:2px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
   opacity: 1.0;
   font-family: "Lucida Console";
-  font-size: small ;
+  font-size: small;
       }
 
 .theme-toggle {

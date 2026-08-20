@@ -5,6 +5,7 @@
         console.log(document.getElementById('btn_b_seccion'));
         console.log(document.getElementById('txt_b_seccion'));
         $("#txt_b_seccion").focus();
+        window.setTimeout(function () { $("#btn_b_seccion").trigger("click"); }, 0);
 
 		  
           $("#btn_b_seccion").click(function(e){

@@ -5,6 +5,7 @@ $(document).ready(function(){
     console.log(document.getElementById('btn_b_usuario'));
     console.log(document.getElementById('txt_b_usuario'));
     $("#txt_b_usuario").focus();
+    window.setTimeout(function () { $("#btn_b_usuario").trigger("click"); }, 0);
 
       
       $("#btn_b_usuario").click(function(e){

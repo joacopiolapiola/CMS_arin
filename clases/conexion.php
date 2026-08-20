@@ -25,6 +25,10 @@ class Conexion extends mysqli
             error_log('Error de conexión a la BD: ' . $this->connect_error);
             throw new RuntimeException('No se pudo conectar a la base de datos.');
         }
+
+        if (!$this->set_charset('utf8mb4')) {
+            throw new RuntimeException('No se pudo configurar la codificacion de la base de datos.');
+        }
     }
 
     public function __destruct()

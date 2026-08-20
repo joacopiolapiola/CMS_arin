@@ -2,8 +2,13 @@
 require_once __DIR__ . '/_cms_guard.php';
 include_once '../clases/encuestas.php';
 
-$mensaje = '';
 $modo = $_GET['operacion'] ?? 'agregar';
+
+if ($modo === 'baja' && isset($_GET['id_encuesta'])) {
+    Encuesta::borrar((int) $_GET['id_encuesta']);
+    header('Location: encuestas_cms.php', true, 303);
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pregunta = trim((string) ($_POST['txtPregunta'] ?? ''));
@@ -20,23 +25,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if ($pregunta !== '' && !empty($opciones)) {
-        $idEncuesta = Encuesta::crear($pregunta, $descripcion, $idTecnologia, $activo);
-        if ($idEncuesta) {
-            EncuestaOpcion::guardar($idEncuesta, $opciones);
-            $mensaje = 'Encuesta creada correctamente.';
-        } else {
-            $mensaje = 'No se pudo crear la encuesta.';
-        }
-    } else {
-        $mensaje = 'La encuesta y sus opciones son obligatorias.';
+    if ($pregunta === '' || empty($opciones)) {
+        http_response_code(422);
+        echo '<div class="alert alert-danger m-3">La encuesta y sus opciones son obligatorias.</div>';
+        exit;
     }
-}
 
-if ($modo === 'baja' && isset($_GET['id_encuesta'])) {
-    $id = (int) $_GET['id_encuesta'];
-    Encuesta::borrar($id);
-    header('Location: encuestas_cms.php');
+    if ($modo === 'edicion' && isset($_POST['id_encuesta'])) {
+        $guardada = Encuesta::actualizar((int) $_POST['id_encuesta'], $pregunta, $descripcion, $idTecnologia, $activo)
+            && EncuestaOpcion::reemplazar((int) $_POST['id_encuesta'], $opciones);
+    } else {
+        $idEncuesta = Encuesta::crear($pregunta, $descripcion, $idTecnologia, $activo);
+        $guardada = $idEncuesta && EncuestaOpcion::guardar($idEncuesta, $opciones);
+    }
+
+    if (!$guardada) {
+        http_response_code(500);
+        echo '<div class="alert alert-danger m-3">No se pudo guardar la encuesta.</div>';
+        exit;
+    }
+
+    header('Location: encuestas_cms.php', true, 303);
     exit;
 }
 
@@ -47,30 +56,6 @@ if ($modo === 'edicion' && isset($_GET['id_encuesta'])) {
         exit;
     }
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_encuesta'])) {
-        $id = (int) $_POST['id_encuesta'];
-        $pregunta = trim((string) ($_POST['txtPregunta'] ?? ''));
-        $descripcion = trim((string) ($_POST['txtDescripcion'] ?? ''));
-        $idTecnologia = (int) ($_POST['txtTema'] ?? 0);
-        $activo = isset($_POST['txtActivo']) ? ((int) $_POST['txtActivo'] === 1 ? 1 : 0) : 1;
-        $lineas = preg_split('/\r\n|\n|\r/', (string) ($_POST['txtOpciones'] ?? ''));
-        $opciones = [];
-
-        foreach ($lineas as $linea) {
-            $texto = trim((string) $linea);
-            if ($texto !== '') {
-                $opciones[] = $texto;
-            }
-        }
-
-        if ($pregunta !== '' && !empty($opciones)) {
-            Encuesta::actualizar($id, $pregunta, $descripcion, $idTecnologia, $activo);
-            EncuestaOpcion::reemplazar($id, $opciones);
-            header('Location: encuestas_cms.php');
-            exit;
-        }
-    }
-
     $opciones = Encuesta::opciones((int) $_GET['id_encuesta']);
     $optionsText = implode("\n", array_map(static function ($opcion) {
         return $opcion['texto'] ?? '';
@@ -78,7 +63,8 @@ if ($modo === 'edicion' && isset($_GET['id_encuesta'])) {
 
     echo '<div class="container mt-3">';
     echo '<h4>Editar encuesta</h4>';
-    echo '<form method="POST">';
+    $urlEdicion = 'encuesta_edit.php?operacion=edicion&id_encuesta=' . (int) $_GET['id_encuesta'];
+    echo '<form method="POST" action="' . htmlspecialchars($urlEdicion, ENT_QUOTES, 'UTF-8') . '" data-cms-form data-success-url="encuestas_cms.php">';
     echo '<input type="hidden" name="id_encuesta" value="' . (int) $_GET['id_encuesta'] . '">';
     echo '<div class="mb-3"><label class="form-label">Pregunta</label><textarea class="form-control" rows="3" name="txtPregunta" required>' . htmlspecialchars($encuesta['pregunta'] ?? '', ENT_QUOTES, 'UTF-8') . '</textarea></div>';
     echo '<div class="mb-3"><label class="form-label">Descripción</label><textarea class="form-control" rows="2" name="txtDescripcion">' . htmlspecialchars($encuesta['descripcion'] ?? '', ENT_QUOTES, 'UTF-8') . '</textarea></div>';
@@ -90,9 +76,5 @@ if ($modo === 'edicion' && isset($_GET['id_encuesta'])) {
     return;
 }
 
-if ($mensaje !== '') {
-    echo '<div class="container mt-3"><div class="alert alert-info">' . htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') . '</div></div>';
-}
-
-header('Location: encuestas_cms.php');
+header('Location: encuestas_cms.php', true, 303);
 exit;

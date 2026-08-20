@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_cms_guard.php';
 //include_once("../clases/conexion.php");
 include_once "../clases/secciones.php";
 
@@ -45,8 +46,12 @@ if (isset($secs)){
            <td>$sec[Activo]</td>
 		   <td>$sec[enlace_cms]</td>";
 	  
+      if (cms_puede_modificar()) {
 	    echo '<td><button class="btn btn-primary btn-xs" onclick="editar(' . $sec['id_seccion'] . ')" >Editar</button></td>';
 		echo '<td><button class="btn btn-primary btn-xs" onclick="borrar(' . $sec['id_seccion'] . ')" >Borrar</button></td>';
+      } else {
+        echo '<td colspan="2"><button class="btn btn-outline-secondary btn-xs" onclick="cargar(\'#Contenido\', \'ver_registro.php?tipo=seccion&id=' . $sec['id_seccion'] . '\')">Ver</button></td>';
+      }
          
 		  echo " </tr> ";
 		   }

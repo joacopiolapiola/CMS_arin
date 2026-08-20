@@ -47,8 +47,9 @@
         function preparar(div,desde,id_hdr,id_hdr_txt)
         {
           $(id_hdr).text(id_hdr_txt);
-          $(div).load(desde);
-          $('#Contenido').load('blanco.php');
+          $('#Contenido').load('blanco.php', function () {
+            $(div).load(desde);
+          });
         }
         function cargar_cms(div,desde,div_hdr,titulo)
         {
@@ -286,7 +287,7 @@ function poner_tecnos()
             const username = document.getElementById('txtNombre').value;
             const phone = document.getElementById('TxtTelefono').value;
             const school = document.getElementById('txtInstitucion').value;
-            const permissions = document.getElementById('txtPermisos').value;
+            const role = document.getElementById('txtRoles').value;
             //const permissions = document.querySelectorAll('input[name="permissions"]:checked');
             
             // Inicializar errores
@@ -351,12 +352,9 @@ function poner_tecnos()
                 document.getElementById('DataError').textContent = '';
             }
 */
-            // Validar Permisos
-            if (permissions.length === 0) {
-                document.getElementById('DataError').textContent += 'Debe seleccionar al menos un permiso.';
+            if (role === '') {
+                document.getElementById('DataError').textContent += 'Debe seleccionar un rol.';
                 hasErrors = true;
-            } else {
-                //document.getElementById('DataError').textContent = '';
             }
 
             // Si no hay errores, enviar el formulario
@@ -368,6 +366,16 @@ function poner_tecnos()
 
 // Delegated click handlers for menu, seccion and submenu links
 (function(){
+  document.addEventListener('submit', function(e){
+    const form = e.target && e.target.matches && e.target.matches('form[data-cms-form]') ? e.target : null;
+    if (!form) return;
+    e.preventDefault();
+    const destination = form.getAttribute('data-success-url') || 'encuestas_cms.php';
+    $.ajax({ url: form.action, type: (form.method || 'POST').toUpperCase(), data: $(form).serialize() })
+      .done(function(){ cargar('#Contenido', destination); })
+      .fail(function(xhr){ $('#Contenido').html(xhr.responseText || '<div class="alert alert-danger m-3">No se pudo completar la operacion.</div>'); });
+  });
+
   document.addEventListener('click', function(e){
     const actionable = e.target && e.target.closest ? e.target.closest('.menu-link, .seccion-link, .submenu-link') : null;
     if (!actionable) return;

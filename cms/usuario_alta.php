@@ -67,13 +67,15 @@ $rol_institucion= '';
             <input type="password"  size="10" name="txtPasswordRepetir" class="form-control" id="txtPasswordRepetir">
         </div>
         <div class="col-sm-4">
-		   <label>Rol Usuario</label>
-		   <input type="text"  name="txtRoles" class="form-control" id="txtRoles" >
+		   <label for="txtRoles">Rol Usuario</label>
+		   <select name="txtRoles" class="form-select" id="txtRoles" required>
+             <option value="">Seleccionar rol</option>
+             <?php foreach (PermisosSistema::rolesDisponibles() as $valorRol => $etiquetaRol): ?>
+               <option value="<?php echo htmlspecialchars($valorRol, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($etiquetaRol, ENT_QUOTES, 'UTF-8'); ?></option>
+             <?php endforeach; ?>
+           </select>
 		</div>
-		<div class="col-sm-4">
-		   <label>Permisos</label>
-		   <input type="text"  name="txtPermisos" class="form-control" id="txtPermisos">
-		</div>	   
+		<input type="hidden" name="txtPermisos" value="">
    	 </div>
 	  
 

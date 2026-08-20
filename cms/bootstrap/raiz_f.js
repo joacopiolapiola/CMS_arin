@@ -5,6 +5,7 @@ $(document).ready(function(){
     console.log(document.getElementById('btn_b_raiz'));
     console.log(document.getElementById('txt_b_raiz'));
     $("#txt_b_raiz").focus();
+    window.setTimeout(function () { $("#btn_b_raiz").trigger("click"); }, 0);
 
       
       $("#btn_b_raiz").click(function(e){

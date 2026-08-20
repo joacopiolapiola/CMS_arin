@@ -6,7 +6,7 @@ include_once '../clases/encuestas.php';
 <div class="container mt-3">
   <h4>Nueva encuesta</h4>
 
-  <form method="POST" action="encuesta_edit.php?operacion=agregar">
+  <form method="POST" action="encuesta_edit.php?operacion=agregar" data-cms-form data-success-url="encuestas_cms.php">
     <div class="mb-3">
       <label for="txtPregunta" class="form-label">Pregunta</label>
       <textarea id="txtPregunta" name="txtPregunta" class="form-control" rows="3" required></textarea>

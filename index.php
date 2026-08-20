@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/clases/permisos.php';
 $n_cats=12;
 $n_seccs=10;
 
@@ -14,6 +15,17 @@ $raiz=Raiz::traer_datos(0);
 $n_seccs=count($secciones);
 $n_cats=count($tecnologias);
 //$miscs=Misc::seleccionar_misc();
+
+$sesionActiva = !empty($_SESSION['login_exitoso']) && (
+  !empty($_SESSION['user']['id']) || !empty($_SESSION['id_usuario'])
+);
+$nombreSesion = $sesionActiva ? (string) ($_SESSION['user']['nombre'] ?? $_SESSION['nombre_usuario'] ?? $_SESSION['name_sess'] ?? '') : '';
+$rolesSesion = $sesionActiva ? PermisosSistema::rolesUsuario() : [];
+$rolSesion = implode(', ', $rolesSesion);
+$puedeUsarCms = $sesionActiva && (
+  PermisosSistema::tieneRol('administrador', 'admin', 'superadmin')
+  || PermisosSistema::tienePermiso('cms:read', 'cms:write')
+);
 
 ?>
 <!DOCTYPE html>
@@ -33,7 +45,7 @@ $n_cats=count($tecnologias);
   src="https://code.jquery.com/jquery-3.7.1.min.js"
   integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
   crossorigin="anonymous"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=<?php echo (int) filemtime(__DIR__ . '/js/main.js'); ?>"></script>
 <link href="css/main.css" rel="stylesheet">
 
  <script>
@@ -100,15 +112,15 @@ $n_cats=count($tecnologias);
       
       
       
-      <div class="col-sm-2" id="usuario" ></div>
-      <div class="col-sm-2" id="rol_user" ></div>
-      <div class="col-sm-2" id="cms_in" ></div>
+      <div class="col-sm-2" id="usuario"><?php echo htmlspecialchars($nombreSesion, ENT_QUOTES, 'UTF-8'); ?></div>
+      <div class="col-sm-2" id="rol_user"><?php echo htmlspecialchars($rolSesion, ENT_QUOTES, 'UTF-8'); ?></div>
+      <div class="col-sm-2" id="cms_in"><?php if ($puedeUsarCms): ?><a href="./cms/cms_p40.php" target="_blank" rel="noopener">Cms</a><?php endif; ?></div>
       <div class="col-sm-2" ></div>
       <div class="col-sm-2" id="chat_general"><a href="#" onclick="cargar('#Contenido','chat.php')">Chat general</a></div>
       <div class="col-sm-2" id="foro_general"><a href="#" onclick="cargar('#Contenido','foro.php')">Foro</a></div>
       <div class="col-sm-2" id="encuestas_general"><a href="#" onclick="cargar('#Contenido','encuesta.php')">Encuestas</a></div>
-      <div class="col-sm-2" id="entrar"><a href="#" onclick="cargar('#Contenido','login.html')">Ingreso</a></div>
-      <div class="col-sm-2" id="registro"><a href="#" onclick="cargar('#Contenido','registro.html')">Registro</a></div>
+      <div class="col-sm-2" id="entrar"><?php if ($sesionActiva): ?><a href="session_out.php">Cerrar sesion</a><?php else: ?><a href="#" onclick="cargar('#Contenido','login.html'); return false;">Ingreso</a><?php endif; ?></div>
+      <div class="col-sm-2" id="registro"<?php if ($sesionActiva): ?> style="display: none;"<?php endif; ?>><a href="#" onclick="cargar('#Contenido','registro.html'); return false;">Registro</a></div>
    </div>  
    </div>
 
@@ -182,7 +194,17 @@ $n_cats=count($tecnologias);
       (function () {
         const body = document.body;
         const toggle = document.getElementById('themeToggle');
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const mediaQuery = typeof window.matchMedia === 'function'
+          ? window.matchMedia('(prefers-color-scheme: dark)')
+          : null;
+
+        function getSavedTheme() {
+          try { return window.localStorage.getItem('site_theme'); } catch (error) { return null; }
+        }
+
+        function saveTheme(theme) {
+          try { window.localStorage.setItem('site_theme', theme); } catch (error) {}
+        }
 
         function applyTheme(theme) {
           const isDark = theme === 'dark';
@@ -191,11 +213,11 @@ $n_cats=count($tecnologias);
             toggle.textContent = isDark ? '☀️ Modo claro' : '🌙 Modo oscuro';
             toggle.setAttribute('aria-pressed', String(isDark));
           }
-          localStorage.setItem('site_theme', theme);
+          saveTheme(theme);
         }
 
-        const savedTheme = localStorage.getItem('site_theme');
-        const initialTheme = savedTheme || (mediaQuery.matches ? 'dark' : 'light');
+        const savedTheme = getSavedTheme();
+        const initialTheme = savedTheme || (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
         applyTheme(initialTheme);
 
         if (toggle) {
@@ -205,15 +227,15 @@ $n_cats=count($tecnologias);
           });
         }
 
-        if (typeof mediaQuery.addEventListener === 'function') {
+        if (mediaQuery && typeof mediaQuery.addEventListener === 'function') {
           mediaQuery.addEventListener('change', function (event) {
-            if (!localStorage.getItem('site_theme')) {
+            if (!getSavedTheme()) {
               applyTheme(event.matches ? 'dark' : 'light');
             }
           });
-        } else if (typeof mediaQuery.addListener === 'function') {
+        } else if (mediaQuery && typeof mediaQuery.addListener === 'function') {
           mediaQuery.addListener(function (event) {
-            if (!localStorage.getItem('site_theme')) {
+            if (!getSavedTheme()) {
               applyTheme(event.matches ? 'dark' : 'light');
             }
           });

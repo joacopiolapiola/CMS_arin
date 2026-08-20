@@ -12,7 +12,7 @@ $datos = new Comodin();
 	  <div class="col-5" >
 	  <?php 
 		//if (isset($_SESSION['username']) && $_SESSION['rol']=='administrador'){
-		 echo '<button type="button" class="btn btn-primary"   onclick="cargar(\'#Contenido\',\'comodin_alta.php\')">Alta</button>';
+		 if (cms_puede_modificar()) echo '<button type="button" class="btn btn-primary" onclick="cargar(\'#Contenido\',\'comodin_alta.php\')">Alta</button>';
 	    //}
 	?>
       </div>

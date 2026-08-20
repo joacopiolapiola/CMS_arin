@@ -91,7 +91,9 @@
 
        function cargar(div,desde)
         {
-        $(div).load(desde);
+        $(div).load(desde, function () {
+          sincronizarSesion();
+        });
         } 
  
         function poner_nombre(div,nombre)
@@ -310,15 +312,50 @@
           
         {
           
-            safeSetText('usuario', nombre || '');
-            safeSetText('rol_user', rol || '');
-            safeSetHtml('entrar', '<a href="#" onclick="cargar(\'#Contenido\',\'logout.html\')">Salir</a>');
+             safeSetText('usuario', nombre || '');
+             safeSetText('rol_user', rol || '');
+             safeSetHtml('entrar', '<a href="session_out.php">Cerrar sesion</a>');
+             const registro = getEl('registro');
+             if (registro) registro.style.display = 'none';
            
         }
+
+     function aplicarEstadoSesion(estado)
+     {
+      if (estado && estado.activa) {
+       safeSetText('usuario', estado.nombre || '');
+       safeSetText('rol_user', estado.rol || '');
+       poner_opcion_logout();
+       if (estado.puede_cms) {
+        poner_opcion_cms();
+       } else {
+        sacar_opcion_cms();
+       }
+       return;
+      }
+
+      poner_opcion_login();
+      sacar_opcion_cms();
+     }
+
+     function sincronizarSesion()
+     {
+      if (typeof window.fetch !== 'function') return;
+
+      window.fetch('session_estado.php', {
+       cache: 'no-store',
+       credentials: 'same-origin'
+      })
+       .then(function (response) { return response.ok ? response.json() : { activa: false }; })
+       .then(aplicarEstadoSesion)
+       .catch(function () {});
+     }
     
      function poner_opcion_logout()
      {
-      safeSetHtml('entrar', '<a href="#" onclick="cargar(\'#Contenido\',\'logout.html\')">Salir</a>');
+      safeSetHtml('entrar', '<a href="session_out.php">Cerrar sesion</a>');
+      const registro = getEl('registro');
+      if (registro) registro.style.display = 'none';
      }
 
      function poner_opcion_login()
@@ -326,6 +363,8 @@
       safeSetHtml('entrar', '<a href="#" onclick="cargar(\'#Contenido\',\'login.html\')">Ingreso</a>');
       safeSetText('rol_user', '');
       safeSetText('usuario', '');
+      const registro = getEl('registro');
+      if (registro) registro.style.display = '';
     }
 
      function poner_opcion_cms()
@@ -336,6 +375,12 @@
      function sacar_opcion_cms()
      {
       safeSetHtml('cms_in', '');
+     }
+
+     if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', sincronizarSesion);
+     } else {
+      sincronizarSesion();
      }
 
 

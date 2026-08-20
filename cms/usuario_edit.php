@@ -56,12 +56,17 @@ $A = Usuario::traer_datos($id);
 	}
 	
   if ($operacion == 'actualizar' && isset($_GET['ID_usuario'])){
-    echo '2-actualizar';
+    $rol = PermisosSistema::normalizarRol($_POST['txtRoles'] ?? '');
+    if ($rol === null) {
+      http_response_code(422);
+      exit('El rol seleccionado no es valido.');
+    }
     $usuario->nombre=$_POST['txtNombre'];
     $usuario->telefono=$_POST['txtTelefono'];
     $usuario->gmail=$_POST['txtEmail'];
-    $usuario->roles=$_POST['txtRoles'];
-    $usuario->permisos=$_POST['txtPermisos'];
+    $usuario->roles=$rol;
+    $usuarioExistente = Usuario::traer_datos((int) $_GET['ID_usuario']);
+    $usuario->permisos=$usuarioExistente['Permisos'] ?? $usuarioExistente['permisos'] ?? '';
     $usuario->institucion=$_POST['txtInstitucion'];
     $usuario->rol_institucion=$_POST['txtRolInstitucion'];
     
@@ -106,14 +111,20 @@ if (!empty($_GET)) {
   $operacion = isset($_GET['operacion']) ? $_GET['operacion'] : 'agregar' ;
   if ($operacion == 'agregar'){
 
+    $rol = PermisosSistema::normalizarRol($_POST['txtRoles'] ?? '');
+    if ($rol === null) {
+      http_response_code(422);
+      exit('El rol seleccionado no es valido.');
+    }
+
     $usuario->nombre=$_POST['txtNombre'];
     $usuario->telefono=$_POST['TxtTelefono'];
-    $usuario->gmail=$_POST['TxtEmail'];
-    $usuario->roles=$_POST['txtRoles'];
-    $usuario->permisos=$_POST['txtPermisos'];
+    $usuario->gmail=$_POST['txtEmail'];
+    $usuario->roles=$rol;
+    $usuario->permisos='';
     $usuario->institucion=$_POST['txtInstitucion'];
     $usuario->rol_institucion=$_POST['txtRolInstitucion'];
-    $usuario->password=md5($_POST['txtPassword']);
+    $usuario->password=password_hash($_POST['txtPassword'], PASSWORD_DEFAULT);
       
     
       
@@ -166,14 +177,16 @@ if ($operacion == 'edicion' || $operacion == 'baja'){
 		   <label for="txtEmail">email</label>
 		   <input type="text" value="<?php echo $email;?>" name="txtEmail" class="form-control" id="txtEmail">
 		</div>
-    <div class="col-sm-5">
-            <label for="txtRoles">Roles</label>
-            <input type="text" value=<?php echo $roles;?> size="10" name="txtRoles" class="form-control" id="txtRoles">
+        <div class="col-sm-5">
+            <label for="txtRoles">Rol Usuario</label>
+            <select name="txtRoles" class="form-select" id="txtRoles" required>
+              <?php $rolActual = PermisosSistema::normalizarRol($roles) ?? 'visitante'; ?>
+              <?php foreach (PermisosSistema::rolesDisponibles() as $valorRol => $etiquetaRol): ?>
+                <option value="<?php echo htmlspecialchars($valorRol, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $rolActual === $valorRol ? ' selected' : ''; ?>><?php echo htmlspecialchars($etiquetaRol, ENT_QUOTES, 'UTF-8'); ?></option>
+              <?php endforeach; ?>
+            </select>
     </div>
-		<div class="col-sm-2">
-		   <label for="txtPermisos">Permisos</label>
-		   <input type="text" value="<?php echo $permisos;?>" name="txtPermisos" class="form-control" id="txtPermisos">
-		</div>	   
+		<input type="hidden" name="txtPermisos" value="">
   </div>
     <br>
    <div class="row" >	 

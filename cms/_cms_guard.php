@@ -80,41 +80,23 @@ $permisoEscritura = $permisosArchivo['write'];
 $canRead = $isAdmin || PermisosSistema::tienePermiso($permisoLectura, 'cms:read');
 $canWrite = $isAdmin || PermisosSistema::tienePermiso($permisoEscritura, 'cms:write');
 
+function cms_puede_modificar(): bool
+{
+    return PermisosSistema::tieneRol('administrador', 'admin', 'superadmin')
+        || PermisosSistema::tienePermiso('cms:write');
+}
+
 if (empty($_SESSION['email']) || (!$canRead && !$canWrite)) {
-    $_SESSION = [];
-
-    if (ini_get('session.use_cookies')) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
-    }
-
-    session_destroy();
-    header('Location: ../index.php');
-    exit;
+    http_response_code(403);
+    exit('No tenes permisos para acceder a esta seccion del CMS.');
 }
 
 if (!$isAdmin && strpos($_SERVER['SCRIPT_NAME'], 'alta.php') !== false && !$canWrite) {
-    $_SESSION = [];
-
-    if (ini_get('session.use_cookies')) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
-    }
-
-    session_destroy();
-    header('Location: ../index.php?error=403');
-    exit;
+    http_response_code(403);
+    exit('No tenes permisos para modificar esta seccion del CMS.');
 }
 
 if (!$isAdmin && strpos($_SERVER['SCRIPT_NAME'], 'edit.php') !== false && !$canWrite) {
-    $_SESSION = [];
-
-    if (ini_get('session.use_cookies')) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
-    }
-
-    session_destroy();
-    header('Location: ../index.php?error=403');
-    exit;
+    http_response_code(403);
+    exit('No tenes permisos para modificar esta seccion del CMS.');
 }

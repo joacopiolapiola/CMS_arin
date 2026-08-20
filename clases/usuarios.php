@@ -66,7 +66,7 @@ class Usuario
     public function registro()
     {
         $tmp = password_hash($this->password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO usuarios (nombre, telefono, email, password, Institucion) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO usuarios (nombre, telefono, roles, email, password, Institucion) VALUES (?, ?, 'usuario', ?, ?, ?)";
         $conn = new Conexion();
         $stmt = $conn->enlace->prepare($sql);
         if (!$stmt) {

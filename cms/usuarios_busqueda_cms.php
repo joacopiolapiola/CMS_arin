@@ -45,8 +45,12 @@ if (isset($secs)){
 		   <td>$sec[Permisos]</td>
            <td>$sec[email]</td>";
 	  
+      if (cms_puede_modificar()) {
 	    echo '<td><button class="btn btn-primary btn-xs" onclick="editar(' . $sec['ID_usuario'] . ')" >Editar</button></td>';
 		echo '<td><button class="btn btn-primary btn-xs" onclick="borrar(' . $sec['ID_usuario'] . ')" >Borrar</button></td>';
+      } else {
+        echo '<td colspan="2"><button class="btn btn-outline-secondary btn-xs" onclick="cargar(\'#Contenido\', \'ver_registro.php?tipo=usuario&id=' . $sec['ID_usuario'] . '\')">Ver</button></td>';
+      }
          
 		  echo " </tr> ";
 		   }

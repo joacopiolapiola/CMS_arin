@@ -8,7 +8,9 @@ $encuestas = Encuesta::listar();
 <div class="container mt-3">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4>Encuestas</h4>
-    <button type="button" class="btn btn-primary" onclick="cargar('#Contenido', 'encuesta_alta.php')">Nueva encuesta</button>
+    <?php if (cms_puede_modificar()): ?>
+      <button type="button" class="btn btn-primary" onclick="cargar('#Contenido', 'encuesta_alta.php')">Nueva encuesta</button>
+    <?php endif; ?>
   </div>
 
   <?php if (empty($encuestas)): ?>
@@ -29,8 +31,12 @@ $encuestas = Encuesta::listar();
               <div class="small text-muted">Estado: <?php echo $activo ? 'Activa' : 'Inactiva'; ?> · Votos: <?php echo $total; ?></div>
             </div>
             <div class="btn-group">
+              <?php if (cms_puede_modificar()): ?>
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cargar('#Contenido', 'encuesta_edit.php?operacion=edicion&id_encuesta=<?php echo $idEncuesta; ?>')">Editar</button>
               <button type="button" class="btn btn-sm btn-outline-danger" onclick="if(confirm('¿Eliminar esta encuesta?')) { cargar('#Contenido', 'encuesta_edit.php?operacion=baja&id_encuesta=<?php echo $idEncuesta; ?>'); }">Eliminar</button>
+              <?php else: ?>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cargar('#Contenido', 'ver_registro.php?tipo=encuesta&id=<?php echo $idEncuesta; ?>')">Ver</button>
+              <?php endif; ?>
             </div>
           </div>
         </div>
